@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jared Admiraal, Aerospace Engineering</title>
+<meta name="description" content="Jared Admiraal, Aerospace Engineering at UC San Diego. Fluid mechanics, finite element methods, CFD, and controls." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0b0d;
+    --bg-2:#101216;
+    --panel:#14161b;
+    --line:rgba(255,255,255,0.10);
+    --line-strong:rgba(255,255,255,0.22);
+    --txt:#f4f5f7;
+    --muted:#9aa0a8;
+    --muted-2:#6c727b;
+    --maxw:1180px;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .display{font-family:"Space Grotesk","Inter",sans-serif;letter-spacing:-0.02em;line-height:1.02}
+  .eyebrow{
+    font-size:12px;letter-spacing:0.28em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:12px;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--line-strong)}
+
+  /* ===== NAV ===== */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    transition:background .4s var(--ease),border-color .4s var(--ease),backdrop-filter .4s;
+    border-bottom:1px solid transparent;
+  }
+  header.nav.scrolled{
+    background:rgba(10,11,13,0.72);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.01em}
+  .brand .mark{
+    width:34px;height:34px;border:1px solid var(--line-strong);border-radius:50%;
+    display:grid;place-items:center;font-family:"Space Grotesk";font-size:13px;font-weight:700;
+    background:var(--panel);
+  }
+  .nav-links{display:flex;align-items:center;gap:34px}
+  .nav-links a{font-size:13.5px;color:var(--muted);letter-spacing:.04em;transition:color .25s}
+  .nav-links a:hover{color:var(--txt)}
+  .nav-cta{
+    border:1px solid var(--line-strong);border-radius:999px;padding:9px 18px;font-size:13px;
+    color:var(--txt);transition:background .25s,color .25s;
+  }
+  .nav-cta:hover{background:var(--txt);color:#000}
+  .menu-toggle{display:none;background:none;border:0;color:var(--txt);font-size:22px;cursor:pointer}
+  @media(max-width:820px){
+    .nav-links{display:none}
+    .menu-toggle{display:block}
+  }
+
+  /* ===== HERO ===== */
+  .hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;padding-bottom:9vh;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;z-index:0}
+  #flow{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .hero-bg::after{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(120% 90% at 72% 14%, rgba(10,11,13,0) 0%, rgba(10,11,13,.45) 60%, rgba(10,11,13,.9) 100%),
+      linear-gradient(180deg, rgba(10,11,13,.55) 0%, rgba(10,11,13,0) 34%, rgba(10,11,13,.92) 100%);
+  }
+  .hero-content{position:relative;z-index:2;width:100%}
+  .hero h1{
+    font-size:clamp(46px,9vw,120px);font-weight:700;
+    max-width:14ch;margin-top:16px;
+  }
+  .hero .sub{
+    margin-top:24px;max-width:56ch;color:var(--muted);font-size:clamp(15px,1.5vw,18px);
+  }
+  .hero .actions{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:13px 24px;
+    font-size:14px;font-weight:600;letter-spacing:.02em;border:1px solid var(--line-strong);
+    transition:transform .25s var(--ease),background .25s,color .25s;cursor:pointer;background:none;color:var(--txt);
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn-solid{background:var(--txt);color:#000;border-color:var(--txt)}
+  .btn-solid:hover{background:#d8dadd}
+  .btn .arr{transition:transform .25s var(--ease)}
+  .btn:hover .arr{transform:translateX(4px)}
+  .scroll-hint{
+    position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted-2);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .scroll-hint .line{width:1px;height:36px;background:linear-gradient(var(--line-strong),transparent);animation:drop 2s var(--ease) infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}50.1%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+  /* ===== SECTION SHELL ===== */
+  section.block{padding:clamp(64px,10vh,120px) 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:44px}
+  .sec-head h2{font-size:clamp(28px,4.4vw,52px);font-weight:700}
+  .sec-head .side{max-width:38ch;color:var(--muted);font-size:15px}
+
+  /* ===== ABOUT ===== */
+  .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:start}
+  .about-grid p{color:#cfd3d8;font-size:clamp(16px,1.7vw,19px);line-height:1.7}
+  .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .tag{border:1px solid var(--line);border-radius:999px;padding:8px 15px;font-size:13px;color:var(--muted);background:var(--panel)}
+  .facts{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+  .fact{padding:18px 22px;border-bottom:1px solid var(--line)}
+  .fact:last-child{border-bottom:0}
+  .fact .l{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}
+  .fact .v{margin-top:4px;font-weight:600}
+  @media(max-width:820px){.about-grid{grid-template-columns:1fr}}
+
+  /* ===== PROJECTS ===== */
+  .projects{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+  .project{
+    display:grid;grid-template-columns:0.9fr 1.1fr;gap:0;border-bottom:1px solid var(--line);
+    position:relative;
+  }
+  .project:nth-child(even){grid-template-columns:1.1fr 0.9fr}
+  .project:nth-child(even) .p-media{order:2}
+  .p-media{position:relative;overflow:hidden;min-height:400px;background:#0d0f14;cursor:pointer}
+  .p-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:20px;background:#0d0f14;transition:transform .6s var(--ease),opacity .4s}
+  .project:hover .p-media img{transform:scale(1.05)}
+  .p-media .ph{position:absolute;inset:0;display:grid;place-items:center;background:
+     repeating-linear-gradient(135deg,#15171c 0 14px,#101216 14px 28px);color:var(--muted-2);
+     font-family:"Space Grotesk";font-size:13px;letter-spacing:.2em;text-transform:uppercase}
+  .p-media .num{
+    position:absolute;top:18px;left:18px;z-index:3;font-family:"Space Grotesk";font-weight:700;
+    font-size:13px;letter-spacing:.1em;color:var(--txt);background:rgba(10,11,13,.55);
+    border:1px solid var(--line-strong);border-radius:999px;padding:5px 12px;backdrop-filter:blur(6px);
+  }
+  .p-media .open-tag{
+    position:absolute;bottom:18px;right:18px;z-index:3;opacity:0;transform:translateY(6px);
+    transition:opacity .3s,transform .3s;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--txt);color:#000;border-radius:999px;padding:8px 14px;font-weight:600;
+  }
+  .project:hover .p-media .open-tag{opacity:1;transform:translateY(0)}
+  .p-media.is-cs{cursor:pointer}
+  .p-media.is-cs img{object-fit:contain;padding:16px;background:#0d0f14}
+  .project:hover .p-media.is-cs img{transform:scale(1.03)}
+  .p-body{padding:clamp(30px,4vw,56px);display:flex;flex-direction:column;justify-content:center}
+  .p-meta{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .p-meta .dot{color:var(--muted-2)}
+  .p-body h3{font-size:clamp(21px,2.6vw,30px);font-weight:700;margin:14px 0 12px;line-height:1.12}
+  .p-tagline{color:#cfd3d8;font-size:15.5px;margin-bottom:18px}
+  .p-bullets{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:20px}
+  .p-bullets li{position:relative;padding-left:20px;color:var(--muted);font-size:14px;line-height:1.55}
+  .p-bullets li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:1px;background:var(--line-strong)}
+  .p-tech{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .p-tech span{font-size:11.5px;letter-spacing:.05em;border:1px solid var(--line);border-radius:6px;padding:4px 10px;color:var(--muted)}
+  .p-links{display:flex;flex-wrap:wrap;gap:18px}
+  .p-link{font-size:13px;font-weight:600;color:var(--txt);display:inline-flex;align-items:center;gap:7px;border-bottom:1px solid transparent;padding-bottom:2px;transition:border-color .25s}
+  .p-link:hover{border-color:var(--txt)}
+  .p-link .arr{transition:transform .25s var(--ease)}
+  .p-link:hover .arr{transform:translate(3px,-3px)}
+  .p-link-cs{border:1px solid var(--line-strong);border-radius:999px;padding:8px 16px;border-bottom:1px solid var(--line-strong)}
+  .p-link-cs:hover{background:var(--txt);color:#000;border-color:var(--txt)}
+  @media(max-width:820px){
+    .project,.project:nth-child(even){grid-template-columns:1fr}
+    .project:nth-child(even) .p-media{order:0}
+    .p-media{min-height:240px}
+  }
+
+  /* ===== CONTACT ===== */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+  .contact-grid h2{font-size:clamp(30px,5vw,60px);font-weight:700;line-height:1.02}
+  .contact-cards{display:flex;flex-direction:column;gap:14px}
+  .ccard{border:1px solid var(--line);border-radius:14px;padding:22px;background:var(--panel);transition:border-color .3s,transform .3s}
+  .ccard:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+  .ccard .l{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}
+  .ccard .v{margin-top:6px;font-weight:600;font-size:17px}
+  .ccard .links{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .ccard .links a{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:7px 14px;color:var(--muted);transition:background .25s,color .25s,border-color .25s}
+  .ccard .links a:hover{background:var(--txt);color:#000;border-color:var(--txt)}
+  @media(max-width:820px){.contact-grid{grid-template-columns:1fr}}
+
+  /* ===== FOOTER ===== */
+  footer{border-top:1px solid var(--line);padding:40px 0;color:var(--muted-2)}
+  .foot-inner{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;font-size:13px}
+  .foot-inner a{color:var(--muted);transition:color .25s}
+  .foot-inner a:hover{color:var(--txt)}
+  .foot-links{display:flex;gap:20px}
+
+  /* ===== REVEAL ===== */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ===== MODAL ===== */
+  .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+  .modal.open{display:flex}
+  .modal-bg{position:absolute;inset:0;background:rgba(5,6,8,.86);backdrop-filter:blur(8px)}
+  .modal-box{position:relative;z-index:2;width:min(1040px,100%);max-height:92vh;background:#0c0d10;border:1px solid var(--line-strong);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .modal-top{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .modal-top .t{font-size:14px;color:var(--muted);max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .modal-top .c{font-size:12px;color:var(--muted-2)}
+  .modal-close{background:none;border:1px solid var(--line);color:var(--txt);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:18px;line-height:1}
+  .modal-stage{position:relative;background:#000;flex:1;min-height:300px;display:grid;place-items:center;overflow:hidden}
+  .modal-stage img{max-width:100%;max-height:70vh;object-fit:contain}
+  .modal-stage iframe{width:100%;height:70vh;border:0;background:#000}
+  .modal-stage .fallback{padding:60px;text-align:center;color:var(--muted)}
+  .modal-stage .fallback a{color:var(--txt);border-bottom:1px solid var(--txt)}
+  .mnav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:46px;height:46px;border-radius:50%;border:1px solid var(--line-strong);background:rgba(10,11,13,.6);color:var(--txt);font-size:22px;cursor:pointer;display:grid;place-items:center;transition:background .25s}
+  .mnav:hover{background:rgba(255,255,255,.15)}
+  .mnav.prev{left:14px}.mnav.next{right:14px}
+  .modal-thumbs{display:flex;gap:8px;padding:12px;overflow-x:auto;border-top:1px solid var(--line);background:#0a0b0d}
+  .modal-thumbs button{flex:0 0 auto;width:84px;height:56px;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--bg-2);cursor:pointer;color:var(--muted-2);font-size:10px;letter-spacing:.1em;display:grid;place-items:center;position:relative}
+  .modal-thumbs button.active{border-color:var(--txt)}
+  .modal-thumbs button img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <span class="mark">JA</span>
+      <span>Jared&nbsp;Admiraal</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#about">About</a>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="nav-cta" href="#work">See work</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-bg"><canvas id="flow"></canvas></div>
+  <div class="wrap hero-content">
+    <span class="eyebrow reveal">Aerospace Engineering · UC San Diego</span>
+    <h1 class="display reveal">Jared Admiraal</h1>
+    <p class="sub reveal">Aerospace engineering student focused on fluid mechanics, CFD, and flight dynamics, working across theory, simulation, design, and manufacturing.</p>
+    <div class="actions reveal">
+      <a class="btn btn-solid" href="#work">View work <span class="arr">→</span></a>
+      <a class="btn" href="mailto:jaredadmiraal1@gmail.com">Email</a>
+    </div>
+  </div>
+  <div class="scroll-hint"><span class="line"></span>Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section class="block" id="about">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2 class="display">About</h2></div>
+    <div class="about-grid">
+      <div class="reveal">
+        <p>I'm an Aerospace Engineering student at UC San Diego concentrating in flight dynamics and controls, with a strong focus on fluid mechanics, computational fluid dynamics, and finite element methods. I work across the whole pipeline, from theory and simulation to hands-on design and manufacturing, turning models into parts that actually get built and tested. When I'm not building, I play tennis, run, and read, lately about vehicle dynamics and low Reynolds number hydrodynamics.</p>
+        <div class="tags">
+          <span class="tag">B.S. Aerospace Engineering</span>
+          <span class="tag">UC San Diego</span>
+          <span class="tag">Fluids · Dynamics · Propulsion</span>
+          <span class="tag">FSAE Aero &amp; VD Lead, 2026-27</span>
+          <span class="tag">Class of 2027</span>
+        </div>
+      </div>
+      <div class="facts reveal">
+        <div class="fact"><div class="l">Focus</div><div class="v">Fluid mechanics, CFD, flight dynamics</div></div>
+        <div class="fact"><div class="l">Methods</div><div class="v">CFD · FEM · Control theory</div></div>
+        <div class="fact"><div class="l">Design &amp; build</div><div class="v">SolidWorks · CAD · Manufacturing</div></div>
+        <div class="fact"><div class="l">Tools</div><div class="v">Python · MATLAB · Ansys · FEniCS</div></div>
+        <div class="fact"><div class="l">Interests</div><div class="v">Propulsion · Aerodynamics · Controls</div></div>
+        <div class="fact"><div class="l">Based in</div><div class="v">San Diego, CA</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="block" id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2 class="display">Work</h2>
+      <p class="side">Research, design, and simulation across aerospace, fluids, robotics, and energy. Tap any project to open its media.</p>
+    </div>
+  </div>
+  <div class="wrap"><div class="projects" id="projects"></div></div>
+</section>
+
+<!-- CONTACT -->
+<section class="block" id="contact">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div class="reveal"><h2 class="display">Get in touch.</h2></div>
+      <div class="contact-cards reveal">
+        <div class="ccard">
+          <div class="l">Email</div>
+          <div class="v"><a href="mailto:jaredadmiraal1@gmail.com">jaredadmiraal1@gmail.com</a></div>
+        </div>
+        <div class="ccard">
+          <div class="l">Resume &amp; Links</div>
+          <div class="links">
+            <a href="assets/docs/Jared_Admiraal_Resume.pdf" target="_blank" rel="noreferrer">Resume (PDF)</a>
+            <a href="https://github.com/jadmiraal1" target="_blank" rel="noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/jared-admiraal-7165862a6" target="_blank" rel="noreferrer">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div>© <span id="yr"></span> Jared Admiraal</div>
+    <div class="foot-links">
+      <a href="https://github.com/jadmiraal1" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="https://www.linkedin.com/in/jared-admiraal-7165862a6" target="_blank" rel="noreferrer">LinkedIn</a>
+      <a href="mailto:jaredadmiraal1@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <div class="modal-top">
+      <div class="t" id="modalTitle"></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <span class="c" id="modalCount"></span>
+        <button class="modal-close" data-close aria-label="Close">×</button>
+      </div>
+    </div>
+    <div class="modal-stage" id="modalStage">
+      <button class="mnav prev" id="mPrev" aria-label="Previous">‹</button>
+      <div id="modalView" style="width:100%;display:grid;place-items:center"></div>
+      <button class="mnav next" id="mNext" aria-label="Next">›</button>
+    </div>
+    <div class="modal-thumbs" id="modalThumbs"></div>
+  </div>
+</div>
+
+<script>
+/* ============ CONTENT ============ */
+const projects = [
+  {
+    title: "TR26 Aerodynamic Package",
+    org: "Triton Racing · Formula SAE",
+    year: "Fall 2025–present",
+    tagline: "A full Formula SAE aero program: airfoil selection, full-car CFD, wind-tunnel validation, composite structures, and in-house manufacturing.",
+    caseStudy: "fsae-aero.html",
+    bullets: [
+      "Selected and 2D-optimized the wings (NACA 4412 + Selig S1223 front, triple-element Eppler 423 + S1223 rear) using parametric CFD design-of-experiments, reaching a 2D front-wing CL of 2.49.",
+      "Ran a grid-independent full-car GEKO CFD study (7M cells, GCI < 1%): 179 N downforce, CL 2.72, L/D 1.37, with speed, pitch, heave, yaw, and roll sweeps plus a rotating-frame skidpad cornering case.",
+      "Validated the trends on a 9% wind-tunnel model, designed the composite spars and topology-optimized mounts in FEA with rig testing, and manufactured the package in-house with a quantified vacuum wet-layup process.",
+    ],
+    tech: ["Ansys Fluent","CFD","Wind Tunnel","SolidWorks","FEA","Composites"],
+    attachments: [
+      { type:"image", title:"TR26 full car", href:"assets/fsae/full-car.png" },
+    ],
+  },
+  {
+    title: "Flight Sciences Intern · ESAero",
+    org: "Empirical Systems Aerospace (ESAero)",
+    year: "Summer 2026–present",
+    tagline: "Flight sciences intern on the Lumberjack UAS, working across mission analysis, CFD, aerodynamics, and GNC. Project specifics are confidential.",
+    bullets: [
+      "Contributing to flight sciences for an uncrewed aircraft program spanning mission analysis, computational fluid dynamics, aerodynamics, and guidance, navigation, and control.",
+      "The details of the work are confidential, so this entry is intentionally kept high-level.",
+    ],
+    tech: ["Mission Analysis","CFD","Aerodynamics","GNC"],
+    attachments: [
+      { type:"image", title:"Lumberjack UAS", href:"assets/esaero/lumberjack.jpg" },
+    ],
+  },
+  {
+    title: "Fiber Orientation: Flow & Liquid Crystals",
+    org: "UC San Diego · Simula Research Laboratory",
+    year: "Spring 2025–present",
+    tagline: "Predicting fiber orientation in skeletal muscle and the heart from geometry, using a Stokes-flow analogy and a Frank-Oseen liquid-crystal director field.",
+    caseStudy: "stokes-muscle.html",
+    bullets: [
+      "Modeling fibers as a nematic liquid-crystal director field that minimizes Frank-Oseen elastic energy under a unit-norm constraint, solved by projected gradient descent in FEniCSx, my current focus.",
+      "Reconstructed a left-ventricle cardiac fiber field from boundary directions and compared the director field against a Stokes-flow model on skeletal muscle (mean deviation 5.2 degrees).",
+      "Earlier Stokes-flow pipeline, robust to within 2.51 degrees across three muscles, presented as a Biophysical Society poster. Collaboration with the Simula Research Laboratory in Oslo.",
+    ],
+    tech: ["FEniCSx","Liquid Crystals","Stokes Flow","FEM"],
+    attachments: [
+      { type:"image", title:"Cardiac fiber field", href:"assets/stokes/lc-ventricle.png" },
+    ],
+  },
+  {
+    title: "Dynamics of a Curved Soap Film",
+    org: "UC San Diego",
+    year: "Summer 2024–present",
+    tagline: "Extending flat soap-film theory to a curved annular geometry with long-wave asymptotics and a symbolic computer-algebra reduction.",
+    caseStudy: "soap-film.html",
+    bullets: [
+      "Extending classical flat soap-film theory to a film bent into a closed ring, where curvature adds Laplace pressure, a centrifugal drive, hoop Marangoni coupling, and a bending mode.",
+      "Reducing the full free-surface flow with surfactant to a compact slow-manifold model using long-wave asymptotics and a symbolic computer-algebra workflow.",
+      "Validating by recovering known limits (the flat film and the symmetric ring) and a suite of physical checks. Advised by S. Llewellyn Smith and P. Rangamani.",
+    ],
+    tech: ["Asymptotics","Computer Algebra","Fluid Mechanics"],
+    attachments: [
+      { type:"image", title:"Annular film geometry", href:"assets/soap/annular-geometry.png" },
+    ],
+  },
+  {
+    title: "Hybrid Airship Systems Analysis",
+    org: "AT2 Aerospace",
+    year: "Summer 2025",
+    tagline: "Rebuilt a MATLAB mission simulator for a new vehicle and corrected its flight-physics models end to end.",
+    bullets: [
+      "Upgraded a MATLAB hybrid-airship mission simulator to a new vehicle design (envelope size, mass properties, buoyancy, propulsion).",
+      "Audited and corrected physics models (buoyancy, standard atmosphere, aerodynamics, fuel burn) for realistic performance prediction.",
+      "Ran full mission profiles (taxi/takeoff/climb/cruise/descent/landing) across payload, fuel, and weather sweeps to map performance envelopes.",
+      "Refactored configuration handling (envelope volume, helium purity, structural limits) for traceable, maintainable parameter studies.",
+    ],
+    tech: ["MATLAB","Flight Mechanics","Simulation"],
+    attachments: [
+      { type:"image", title:"AT2 Airship", href:"assets/oldassets/airship.jpg" },
+    ],
+  },
+  {
+    title: "Vortex-Cooled Rocket Engine CFD",
+    org: "UC San Diego · MAE 185",
+    year: "Spring 2026",
+    tagline: "A cold-flow CFD study of the bidirectional vortex and passive wall insulation in a vortex-cooled rocket engine.",
+    caseStudy: "rocket-engine.html",
+    bullets: [
+      "Built a steady 3D cold-flow model in Ansys Fluent (Realizable k-ε, poly-hexcore mesh) of a vortex-cooled engine, confirming the intended bidirectional vortex and tracking stream mixing with a passive species tracer.",
+      "Showed the cold tangential swirl passively shields the chamber wall: a 3000 K core leaves the wall at 498 K, an insulation effectiveness of 0.93.",
+      "Established grid independence across four meshes (53k to 6.5M cells), reporting all results on a level within 1% of the finest.",
+    ],
+    tech: ["Ansys Fluent","CFD","Swirling Flow","Heat Transfer"],
+    attachments: [
+      { type:"image", title:"Vortex, tangential velocity", href:"assets/rocket/tangential-velocity.jpg" },
+    ],
+  },
+  {
+    title: "Predicting Jet-Engine Remaining Useful Life",
+    org: "UC San Diego · Machine Learning",
+    year: "Spring 2026",
+    tagline: "Predicting turbofan remaining useful life from sensor data with Ridge, Lasso, and neural-network regression on the NASA C-MAPSS benchmark.",
+    caseStudy: "rul-prediction.html",
+    bullets: [
+      "Compared three regression models for remaining-useful-life prediction with grouped, leakage-free cross-validation; the neural network led on every metric (R² 0.81, RMSE 18.1 cycles on FD001).",
+      "Found the predictive signal spread across many sensors (Ridge and Lasso nearly tied), with the neural network's edge widening on the harder six-condition FD004 scenario.",
+      "Showed that engine cycle number is a misleading feature: it lowers cross-validation error but raises test error on truncated trajectories.",
+    ],
+    tech: ["Python","scikit-learn","Regression","Neural Networks"],
+    attachments: [
+      { type:"image", title:"Per-engine RUL trajectories", href:"assets/rul/trajectories.jpg" },
+    ],
+  },
+  {
+    title: "Axisymmetric Stokes Flow via FEM",
+    org: "UCSD, Computational Cellular Mechanobiology",
+    year: "Summer 2024",
+    tagline: "Analytical and finite-element solutions for Stokes flow past a fluid sphere, validated to second-order convergence.",
+    bullets: [
+      "Modeled axisymmetric Stokes flow past a fluid sphere, deriving the analytical stream function in spherical and cylindrical coordinates for internal and external circulation.",
+      "Implemented a full FEniCS solution, weak form in cylindrical coordinates, custom tangential-stress and no-penetration BCs, validated via L2 error convergence.",
+      "Compared analytical vs. FEM with streamline and velocity plots, demonstrating second-order convergence and physically consistent boundary-layer behavior.",
+    ],
+    tech: ["FEniCS","FEM","Python"],
+    attachments: [
+      { type:"image", title:"Fluid Sphere", href:"assets/oldassets/fssystem.jpg" },
+      { type:"pdf", title:"Report", href:"assets/oldassets/fs-report.pdf" },
+      { type:"github", title:"GitHub Repository", href:"https://github.com/jadmiraal1/FluidSphere.git" },
+    ],
+  },
+  {
+    title: "Autonomous Tow Car",
+    org: "UCSD, TritonAI (Autonomous Vehicles)",
+    year: "Spring 2025",
+    tagline: "A self-driving tow vehicle guided by computer vision and GPS-based PID control, from CAD to closed-loop laps.",
+    bullets: [
+      "Designed and CAD-modeled a full autonomous towing vehicle, 3D-printed assemblies, servo-driven hitch, magnetic coupling, and a Roboflow model for reliable retrieval.",
+      "Built and trained a deep-learning vision system for real-time chassis detection and alignment, with custom data collection, labeling, and evaluation.",
+      "Implemented GPS-based PID control with ROS integration for smooth navigation, path tracking, and automated towing across CV- and GPS-driven laps.",
+    ],
+    tech: ["ROS","Computer Vision","PID","Roboflow"],
+    attachments: [
+      { type:"image", title:"Autonomous Tow Car", href:"assets/oldassets/towcar.jpg" },
+      { type:"video", title:"CV Deep Learning Laps", href:"https://www.youtube.com/watch?v=gswLIsssjMU", thumbnail:"assets/oldassets/cvlaps.jpg" },
+      { type:"video", title:"GPS PID-tuned Laps", href:"https://www.youtube.com/watch?v=jGMciUYtp7U", thumbnail:"assets/oldassets/gpslaps.jpg" },
+      { type:"video", title:"3-Pt Turn & Hook ROS2 Nodes", href:"https://www.youtube.com/watch?v=S59p1jVCKag", thumbnail:"assets/oldassets/3ptturn.jpg" },
+      { type:"slides", title:"Slides", href:"https://docs.google.com/presentation/d/1WQSiGOoMS4eBSqy43FkkF-jwgOgw8NVM2PyahG6Fk_U/preview" },
+      { type:"github", title:"GitHub Repository", href:"https://github.com/UCSD-ECEMAE-148/148-spring-2025-final-project-team-1.git" },
+    ],
+  },
+  {
+    title: "Flexible Thermoelectric Cooler Manufacturing",
+    org: "UCSD, Thermal Energy Materials & Physics Lab (PI: R. Chen)",
+    year: "2023–2024",
+    tagline: "Optimized the early-stage fabrication of a flexible thermoelectric cooler, from photolithography to pick-and-place.",
+    bullets: [
+      "Revised PCB layouts, tuned multi-step photolithography/etching, and automated soldering workflows.",
+      "Automated a pick-and-place system to position 400 p/n pillars onto etched copper circuits with reliable alignment and throughput.",
+      "Handled hazardous wet-lab chemicals (photoresists, developers, etchants) with PPE, fume hoods, and SOPs, ensuring compliant storage and disposal.",
+    ],
+    tech: ["Photolithography","Automation","Fabrication"],
+    attachments: [
+      { type:"image", title:"Thermoelectric cooler", href:"assets/oldassets/thermoelectric.jpg" },
+    ],
+  },
+  {
+    title: "Automated Fuel-Cell Membrane Conductivity Testing",
+    org: "Paradign Energy",
+    year: "2021–2023",
+    tagline: "An automated rig that measures hydrogen fuel-cell membrane proton conductivity, replacing a manual workflow.",
+    bullets: [
+      "Developed an automated testing system for membrane conductivity, integrating microcontroller data acquisition, temperature sensing, and automated voltage application.",
+      "Implemented control and analysis software for real-time resistance computation, temperature correction, and logging, cutting human error and improving reproducibility.",
+      "Optimized throughput and precision via hardware/software feedback loops, achieving consistent results across temperature gradients for scalable characterization.",
+    ],
+    tech: ["Microcontrollers","Instrumentation","Data Acquisition"],
+    attachments: [
+      { type:"image", title:"Process chart", href:"assets/oldassets/paradign.jpg" },
+      { type:"pdf", title:"Report", href:"https://drive.google.com/file/d/1S9W6csatE6y67DPE4CoaLjF9on-CUcpm/preview" },
+    ],
+  },
+];
+
+/* ============ HELPERS ============ */
+const ytId = (url) => (url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([A-Za-z0-9_-]{11})/)||[])[1] || null;
+const ytEmbed = (url) => { const id = ytId(url); return id ? `https://www.youtube.com/embed/${id}` : null; };
+const driveEmbed = (url) => url.replace(/\/view.*$/,"/preview");
+const typeLabel = (t)=>({image:"Image",pdf:"PDF",slides:"Slides",video:"Video",github:"GitHub"}[t]||"Link");
+
+function heroThumb(a){
+  if(a.type==="image") return a.href;
+  if(a.type==="video"){ const id=ytId(a.href); return a.thumbnail || (id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:null); }
+  return null;
+}
+
+/* ============ RENDER PROJECTS ============ */
+const projWrap = document.getElementById("projects");
+projects.forEach((p,i)=>{
+  const hero = p.attachments && p.attachments[0];
+  const thumb = hero ? heroThumb(hero) : null;
+  const num = String(i+1).padStart(2,"0");
+  const el = document.createElement("article");
+  el.className = "project reveal";
+  el.innerHTML = `
+    <div class="p-media${p.caseStudy?' is-cs':''}" ${p.caseStudy?`data-href="${p.caseStudy}"`:`data-proj="${i}"`}>
+      <span class="num">${num}</span>
+      ${thumb ? `<img src="${thumb}" alt="${p.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">
+                 <div class="ph" style="display:none">${typeLabel(hero.type)}</div>`
+              : `<div class="ph">${hero?typeLabel(hero.type):"No media"}</div>`}
+      <span class="open-tag">${p.caseStudy?'Read case study →':'Open media →'}</span>
+    </div>
+    <div class="p-body">
+      <div class="p-meta"><span>${p.org}</span><span class="dot">/</span><span>${p.year}</span></div>
+      <h3>${p.title}</h3>
+      <p class="p-tagline">${p.tagline}</p>
+      <ul class="p-bullets">${p.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
+      ${p.tech?`<div class="p-tech">${p.tech.map(t=>`<span>${t}</span>`).join("")}</div>`:""}
+      <div class="p-links">
+        ${p.caseStudy?`<a class="p-link p-link-cs" href="${p.caseStudy}">Read case study <span class="arr">↗</span></a>`:""}
+        ${p.caseStudy?"":`<a class="p-link" href="#" data-proj="${i}">Open media <span class="arr">↗</span></a>`}
+        ${p.attachments.filter(a=>a.type==="github").map(a=>`<a class="p-link" href="${a.href}" target="_blank" rel="noreferrer">GitHub <span class="arr">↗</span></a>`).join("")}
+      </div>
+    </div>`;
+  projWrap.appendChild(el);
+});
+
+/* ============ MODAL ============ */
+const modal = document.getElementById("modal");
+const modalView = document.getElementById("modalView");
+const modalTitle = document.getElementById("modalTitle");
+const modalCount = document.getElementById("modalCount");
+const modalThumbs = document.getElementById("modalThumbs");
+let curProj = null, curIdx = 0;
+
+function renderStage(){
+  const p = projects[curProj];
+  const a = p.attachments[curIdx];
+  modalTitle.textContent = `${p.title}, ${a.title || typeLabel(a.type)}`;
+  modalCount.textContent = `${curIdx+1} / ${p.attachments.length}`;
+  let html = "";
+  if(a.type==="image"){
+    html = `<img src="${a.href}" alt="${a.title||""}" onerror="this.outerHTML='<div class=&quot;fallback&quot;>Image not found.<br><br>Make sure the file exists at <code>${a.href}</code>.</div>'">`;
+  } else if(a.type==="video"){
+    const e = ytEmbed(a.href);
+    html = e ? `<iframe src="${e}" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>`
+             : `<div class="fallback"><a href="${a.href}" target="_blank" rel="noreferrer">Open video ↗</a></div>`;
+  } else if(a.type==="slides"){
+    const src = a.href.replace(/\/(edit|pub|view)(\?.*)?$/,"/preview");
+    html = `<iframe src="${src}" allowfullscreen></iframe>`;
+  } else if(a.type==="pdf"){
+    const src = a.href.includes("drive.google.com") ? driveEmbed(a.href) : a.href;
+    html = `<iframe src="${src}"></iframe>`;
+  } else {
+    html = `<div class="fallback"><a href="${a.href}" target="_blank" rel="noreferrer">Open link ↗</a></div>`;
+  }
+  modalView.innerHTML = html;
+  [...modalThumbs.children].forEach((b,i)=>b.classList.toggle("active", i===curIdx));
+}
+
+function buildThumbs(){
+  const p = projects[curProj];
+  modalThumbs.innerHTML = "";
+  p.attachments.forEach((a,i)=>{
+    const b = document.createElement("button");
+    const t = heroThumb(a);
+    b.className = i===curIdx?"active":"";
+    b.innerHTML = t ? `<img src="${t}" alt="${a.title||""}" onerror="this.style.display='none';this.parentElement.textContent='${typeLabel(a.type)}'">` : typeLabel(a.type);
+    b.addEventListener("click",()=>{curIdx=i;renderStage();});
+    modalThumbs.appendChild(b);
+  });
+}
+
+function openModal(i){
+  curProj = i; curIdx = 0;
+  buildThumbs(); renderStage();
+  modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+}
+function closeModal(){
+  modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
+  modalView.innerHTML=""; document.body.style.overflow="";
+}
+function step(d){
+  const n = projects[curProj].attachments.length;
+  curIdx = (curIdx + d + n) % n; renderStage();
+}
+
+document.addEventListener("click",(e)=>{
+  const cs = e.target.closest("[data-href]");
+  if(cs){ window.location.href = cs.getAttribute("data-href"); return; }
+  const trig = e.target.closest("[data-proj]");
+  if(trig){ e.preventDefault(); openModal(+trig.getAttribute("data-proj")); }
+  if(e.target.hasAttribute("data-close")) closeModal();
+});
+document.getElementById("mPrev").addEventListener("click",()=>step(-1));
+document.getElementById("mNext").addEventListener("click",()=>step(1));
+document.addEventListener("keydown",(e)=>{
+  if(!modal.classList.contains("open")) return;
+  if(e.key==="Escape") closeModal();
+  if(e.key==="ArrowLeft") step(-1);
+  if(e.key==="ArrowRight") step(1);
+});
+
+/* ============ NAV + REVEAL ============ */
+const nav = document.getElementById("nav");
+const onScroll = ()=> nav.classList.toggle("scrolled", window.scrollY>40);
+onScroll(); window.addEventListener("scroll", onScroll, {passive:true});
+
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+},{threshold:0.12});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+document.getElementById("yr").textContent = new Date().getFullYear();
+document.getElementById("menuToggle").addEventListener("click",()=>{
+  const links = document.querySelector(".nav-links");
+  const open = links.dataset.open === "1";
+  links.dataset.open = open ? "0" : "1";
+  links.style.cssText = open ? "" : "display:flex;position:absolute;top:72px;right:28px;flex-direction:column;gap:16px;background:#101216;border:1px solid var(--line);padding:18px 22px;border-radius:12px";
+});
+
+/* ============ HERO  PASTEL TURBULENCE (paint dropped in a fluid) ============ */
+/*
+  No object in frame; picture it far upstream. The field is layered,
+  divergence-free curl noise with a gentle mean drift. Thousands of paint
+  particles ride it and are laid down as short brush strokes whose colors come
+  from a smooth, coherent spectrum field, so the whole pastel palette stirs and
+  swirls through the turbulence like a Starry Night made of fluid. Strokes
+  persist briefly to build painterly, impasto trails.
+*/
+(function(){
+  const canvas = document.getElementById("flow");
+  const ctx = canvas.getContext("2d");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const TWO_PI = Math.PI*2;
+
+  let W,H,dpr,parts,raf,frameNo,Vamp,drift,baseL,globalHue;
+
+  // layered divergence-free curl noise; sin/cos of each layer angle precomputed
+  const LYR=[
+    {l:0.90, amp:1.00, w:0.20, s:Math.sin(0.6), c:Math.cos(0.6)},
+    {l:0.45, amp:0.70, w:0.35, s:Math.sin(2.3), c:Math.cos(2.3)},
+    {l:0.22, amp:0.44, w:0.60, s:Math.sin(4.0), c:Math.cos(4.0)},
+    {l:0.11, amp:0.26, w:1.00, s:Math.sin(5.2), c:Math.cos(5.2)},
+  ];
+  const _v=[0,0];
+  function field(x,y,t){
+    let tx=0,ty=0;
+    for(const L of LYR){
+      const k=TWO_PI/(baseL*L.l);
+      const cc=Math.cos(k*(L.c*x+L.s*y)+L.w*t);
+      tx +=  L.amp*L.s*cc;
+      ty += -L.amp*L.c*cc;
+    }
+    _v[0]=drift+Vamp*tx; _v[1]=Vamp*ty;
+  }
+  function paintHue(x,y,t){
+    const a=Math.sin(x*0.0042 + 1.6*Math.sin(y*0.0031 + t*0.06));
+    const b=Math.sin(y*0.0037 - 1.3*Math.sin(x*0.0029 - t*0.05));
+    return globalHue + 180*a + 150*b;
+  }
+  function configure(){
+    dpr = Math.min(window.devicePixelRatio||1, 1.8);
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.fillStyle="#0a0b0d"; ctx.fillRect(0,0,W,H);
+    ctx.lineCap="round"; ctx.lineJoin="round";
+    baseL = H;
+    Vamp  = Math.max(1.4, H*0.0048);
+    drift = Vamp*0.5;
+    globalHue = 200; frameNo = 0;
+    const n = Math.min(6000, Math.round(W*3.6));
+    parts = new Array(n);
+    for(let i=0;i<n;i++) parts[i]=newPart(true);
+  }
+  function newPart(seed){
+    const x=Math.random()*W, y=Math.random()*H;
+    return { x, y, px:x, py:y, life:55+Math.random()*120, age:seed?Math.random()*60:0, hue:paintHue(x,y,0) };
+  }
+  function step(){
+    frameNo++;
+    const t=frameNo/60;
+    globalHue += 0.05;
+    ctx.fillStyle="rgba(10,11,13,0.045)";
+    ctx.fillRect(0,0,W,H);
+    for(let i=0;i<parts.length;i++){
+      const p=parts[i];
+      field(p.x,p.y,t);
+      const vx=_v[0], vy=_v[1];
+      p.px=p.x; p.py=p.y;
+      p.x+=vx; p.y+=vy; p.age++;
+      if(p.age>p.life || p.x<-4||p.x>W+4||p.y<-4||p.y>H+4){
+        const np=newPart(false); np.hue=paintHue(np.x,np.y,t); parts[i]=np; continue;
+      }
+      const spd=Math.hypot(vx,vy);
+      const L=70+Math.min(15,spd*2.2);
+      const a=Math.min(0.85,0.42+spd*0.12);
+      ctx.strokeStyle=`hsla(${p.hue},72%,${L}%,${a})`;
+      ctx.lineWidth=1.3+Math.min(2.4,spd*0.55);
+      ctx.beginPath(); ctx.moveTo(p.px,p.py); ctx.lineTo(p.x,p.y); ctx.stroke();
+    }
+  }
+  function loop(){ step(); raf=requestAnimationFrame(loop); }
+  function start(){
+    configure(); cancelAnimationFrame(raf);
+    if(reduce){ for(let k=0;k<70;k++) step(); return; }
+    loop();
+  }
+  let rt;
+  window.addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(start,200); });
+  start();
+})();
+</script>
+</body>
+</html>

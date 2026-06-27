@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fiber Orientation from Flow and Liquid Crystals, Jared Admiraal</title>
+<meta name="description" content="Predicting fiber orientation in skeletal muscle and the heart from geometry, using a Stokes-flow analogy and a Frank-Oseen liquid-crystal director field. UC San Diego and Simula Research Laboratory." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0b0d; --bg-2:#101216; --panel:#14161b;
+    --line:rgba(255,255,255,0.10); --line-strong:rgba(255,255,255,0.22);
+    --txt:#f4f5f7; --muted:#9aa0a8; --muted-2:#6c727b;
+    --maxw:1120px; --ease:cubic-bezier(.2,.7,.2,1);
+    --grad:linear-gradient(90deg,#9fd6ff,#c9b8ff 45%,#ffc1e3);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .display{font-family:"Space Grotesk","Inter",sans-serif;letter-spacing:-0.02em;line-height:1.04}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:60}
+  header.nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .4s var(--ease),border-color .4s;border-bottom:1px solid transparent}
+  header.nav.scrolled{background:rgba(10,11,13,0.78);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .back{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted);transition:color .25s}
+  .back:hover{color:var(--txt)}
+  .nav-sections{display:flex;gap:22px}
+  .nav-sections a{font-size:13px;color:var(--muted);transition:color .25s}
+  .nav-sections a:hover{color:var(--txt)}
+  @media(max-width:980px){.nav-sections{display:none}}
+  .hero{position:relative;min-height:84vh;display:flex;align-items:flex-end;padding-bottom:7vh;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero-img{position:absolute;inset:0;z-index:0}
+  .hero-img img{width:100%;height:100%;object-fit:cover;opacity:.4}
+  .hero-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,11,13,.55) 0%,rgba(10,11,13,.20) 38%,rgba(10,11,13,.96) 100%)}
+  .hero-c{position:relative;z-index:2;width:100%}
+  .eyebrow{font-size:12px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--grad)}
+  .hero h1{font-size:clamp(33px,5.6vw,72px);font-weight:700;margin-top:16px;max-width:18ch}
+  .hero .lede{margin-top:22px;max-width:66ch;color:#cfd3d8;font-size:clamp(16px,1.7vw,19px)}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .chip{border:1px solid var(--line-strong);border-radius:999px;padding:8px 15px;font-size:13px;background:rgba(10,11,13,.4);backdrop-filter:blur(6px)}
+  .chip b{font-family:"Space Grotesk";font-weight:700}
+  .strip{border-bottom:1px solid var(--line);background:var(--bg-2)}
+  .strip-in{display:flex;flex-wrap:wrap}
+  .stat{flex:1 1 180px;padding:26px 24px;border-left:1px solid var(--line)}
+  .stat:first-child{border-left:0}
+  .stat .k{font-family:"Space Grotesk";font-size:clamp(20px,2.4vw,28px);font-weight:700}
+  .stat .l{margin-top:5px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  section.blk{padding:clamp(56px,8vh,96px) 0;border-top:1px solid var(--line)}
+  section.blk:first-of-type{border-top:0}
+  .sec-no{font-family:"Space Grotesk";font-size:13px;letter-spacing:.1em;font-weight:700}
+  .sec-h{font-size:clamp(26px,4vw,44px);font-weight:700;margin:10px 0 6px;max-width:24ch}
+  .sec-sub{color:var(--muted);font-size:15px;max-width:64ch;margin-bottom:30px}
+  .prose{max-width:72ch}
+  .prose p{color:#cfd3d8;margin-bottom:16px;font-size:16px}
+  .prose p.note{color:var(--muted);font-size:14.5px}
+  .lead{font-size:18px !important;color:#e6e8ec !important}
+  figure{margin:26px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+  figure img{width:100%;cursor:zoom-in;transition:opacity .3s;background:#0c0d10}
+  figure img:hover{opacity:.92}
+  figcaption{padding:13px 16px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+  figcaption b{color:var(--txt);font-weight:600}
+  .fig-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .fig-grid figure{margin:0}
+  @media(max-width:760px){.fig-grid{grid-template-columns:1fr}}
+  .imgfallback{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--muted-2);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:repeating-linear-gradient(135deg,#15171c 0 14px,#101216 14px 28px)}
+  .mcards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  .mcard{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel)}
+  .mcard .v{font-family:"Space Grotesk";font-size:clamp(20px,2.2vw,26px);font-weight:700}
+  .mcard .v small{font-size:13px;color:var(--muted);font-weight:500}
+  .mcard .l{margin-top:5px;font-size:12px;color:var(--muted);letter-spacing:.03em}
+  @media(max-width:760px){.mcards{grid-template-columns:1fr 1fr}}
+  .models{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0}
+  .model{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel)}
+  .model.hl{border-color:var(--line-strong);background:linear-gradient(180deg,rgba(159,214,255,.05),transparent)}
+  .model h4{font-size:15px;font-weight:700;margin-bottom:6px}
+  .model .tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
+  .model p{font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:8px}
+  @media(max-width:760px){.models{grid-template-columns:1fr}}
+  .callout{border-left:2px solid transparent;border-image:var(--grad) 1;padding:4px 0 4px 18px;margin:22px 0;color:#e6e8ec;font-size:16px}
+  .spec{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+  .spec span{font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:5px 11px;color:var(--muted)}
+  .steps{counter-reset:s;display:grid;gap:12px;margin:22px 0;max-width:72ch}
+  .step{position:relative;border:1px solid var(--line);border-radius:12px;padding:16px 18px 16px 54px;background:var(--panel)}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:15px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:"Space Grotesk";font-size:13px;font-weight:700;background:var(--bg-2)}
+  .step b{color:var(--txt)}
+  .step span{color:var(--muted);font-size:14.5px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  footer{border-top:1px solid var(--line);padding:46px 0;color:var(--muted-2)}
+  .foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line-strong);border-radius:999px;padding:11px 20px;font-size:14px;font-weight:600;color:var(--txt);transition:background .25s,color .25s}
+  .btn:hover{background:var(--txt);color:#000}
+  .lb{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(5,6,8,.9);backdrop-filter:blur(6px);cursor:zoom-out}
+  .lb.open{display:flex}
+  .lb img{max-width:96vw;max-height:92vh;border:1px solid var(--line-strong);border-radius:10px}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="back" href="index.html">&larr; &nbsp;Jared Admiraal</a>
+    <nav class="nav-sections">
+      <a href="#problem">Problem</a>
+      <a href="#flow">Stokes flow</a>
+      <a href="#crystals">Liquid crystals</a>
+      <a href="#heart">Heart</a>
+      <a href="#outcome">Outcome</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-img"><img src="assets/stokes/lc-ventricle.png" alt="Liquid-crystal fiber field on a left ventricle" onerror="this.parentElement.style.background='#101216';this.remove()"></div>
+  <div class="wrap hero-c">
+    <span class="eyebrow">UC San Diego · Simula Research Laboratory</span>
+    <h1 class="display">Fiber orientation from flow and liquid crystals</h1>
+    <p class="lede">Two physically grounded ways to predict the fiber architecture of soft tissue, skeletal muscle and the heart, from geometry alone: a fluid-flow analogy, and a liquid-crystal director field. The director-field formulation has been the main focus of my recent work.</p>
+    <div class="chips">
+      <span class="chip"><b>Frank-Oseen</b> director field</span>
+      <span class="chip">Stokes flow</span>
+      <span class="chip">Heart + skeletal muscle</span>
+      <span class="chip">FEniCSx</span>
+      <span class="chip">Biophysical Society poster, 2026</span>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap"><div class="strip-in">
+    <div class="stat"><div class="k">2</div><div class="l">Physical models of fibers</div></div>
+    <div class="stat"><div class="k">≤ 2.51°</div><div class="l">Stokes robustness deviation</div></div>
+    <div class="stat"><div class="k">5.2°</div><div class="l">Flow vs liquid-crystal agreement</div></div>
+    <div class="stat"><div class="k">UCSD + Simula</div><div class="l">Collaboration</div></div>
+  </div></div>
+</div>
+
+<!-- OVERVIEW -->
+<section class="blk" id="overview">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">00 / OVERVIEW</div>
+    <h2 class="sec-h display">Giving tissue its grain, from its shape alone.</h2>
+    <div class="prose">
+      <p class="lead">The mechanics of muscle and heart tissue depend on which way the fibers run, but that internal architecture is hard to measure in a living person. I work on inferring it from geometry, using two physical pictures of what a fiber field is, and comparing them.</p>
+      <p>The first picture treats the fibers as the streamlines of a slow viscous flow through the tissue. The second, and the focus of the past several months, treats them as the director field of a liquid crystal: the tissue is modeled as an ordered medium whose preferred axis bends and twists to minimize an elastic energy. This work is a collaboration between Padmini Rangamani's lab at UC San Diego and Marie Rognes' group at the Simula Research Laboratory (with Ingvild Devold), and the flow side was presented as a Biophysical Society poster.</p>
+      <p class="note">This page describes the project at a public, conceptual level; it is ongoing, unpublished research, so the derivations and code are not shown.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="blk" id="problem">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">01 / THE PROBLEM</div>
+    <h2 class="sec-h display">Fiber direction drives the mechanics, but it is hard to measure.</h2>
+    <p class="sec-sub">In a mechanical or electrical simulation of muscle or heart, the predicted behavior depends strongly on the fiber field. Geometry is increasingly easy to obtain from imaging; the internal fiber architecture is not.</p>
+    <div class="prose">
+      <p>Diffusion tensor imaging can estimate fiber fields in vivo, but it is costly, limited in resolution, and not widely available. A geometry-driven way to generate a physically reasonable fiber field, and to understand how much that field depends on the assumptions behind it, is therefore genuinely useful, both for skeletal muscle and for the heart, where fiber orientation governs how the ventricle contracts and how electrical activation spreads.</p>
+    </div>
+    <figure><img src="assets/stokes/muscle-multiscale.jpg" alt="Multiscale organization of skeletal muscle" onerror="imgFail(this)"><figcaption><b>Multiscale tissue.</b> Fiber orientation links the visible geometry to the tissue's mechanical and electrical behavior, but it is the part a model cannot read off the surface.</figcaption></figure>
+  </div>
+</section>
+
+<!-- STOKES FLOW -->
+<section class="blk" id="flow">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">02 / APPROACH ONE · STOKES FLOW</div>
+    <h2 class="sec-h display">Let a fluid trace the fibers.</h2>
+    <p class="sec-sub">Push a slow, viscous flow through a muscle from one tendon attachment to the other, and its streamlines sweep out smooth end-to-end paths that stand in for the fibers. I built a reproducible pipeline around this idea and stress-tested it.</p>
+    <div class="steps">
+      <div class="step"><b>Surface to mesh.</b> <span>Anatomical surfaces are smoothed and converted to tetrahedral meshes with fTetWild.</span></div>
+      <div class="step"><b>Tag boundaries and solve.</b> <span>The aponeuroses become inlet and outlet; incompressible Stokes flow is solved in FEniCSx with a Taylor-Hood mixed element and a free-slip wall enforced through a Lagrange multiplier.</span></div>
+      <div class="step"><b>Extract fibers.</b> <span>The velocity field is normalized to unit vectors, giving the predicted fiber-orientation field.</span></div>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/stokes/fiber-field.jpg" alt="Predicted fiber field from Stokes streamlines" onerror="imgFail(this)"><figcaption><b>Predicted fiber field.</b> Normalized Stokes-flow streamlines read as local fiber directions from aponeurosis to aponeurosis.</figcaption></figure>
+      <figure><img src="assets/stokes/angular-deviation.jpg" alt="Angular deviation heat map" onerror="imgFail(this)"><figcaption><b>Robustness map.</b> Angular deviation between boundary-condition methods; differences concentrate near the inlet and stay small elsewhere.</figcaption></figure>
+    </div>
+    <div class="prose">
+      <p>A robustness study across three anatomically distinct muscles (a bipennate gastrocnemius, a pennate soleus, and a broad gluteus maximus) compared two ways of driving the inlet and perturbed the tagged attachment regions. The predicted fibers were stable: the boundary-condition methods agree to a mean angular deviation of <b>2.51 degrees or less</b>, perturbations stay within <b>1.65 degrees</b>, and at least <b>88% of surface points fall within 5 degrees</b>. This is the flow side that was presented at the Biophysical Society meeting.</p>
+    </div>
+    <div class="spec"><span>Incompressible Stokes flow</span><span>Taylor-Hood P2 / P1</span><span>Lagrange-multiplier slip BC</span><span>FEniCSx</span><span>fTetWild</span></div>
+  </div>
+</section>
+
+<!-- LIQUID CRYSTALS -->
+<section class="blk" id="crystals">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">03 / APPROACH TWO · LIQUID CRYSTALS</div>
+    <h2 class="sec-h display">Fibers as the director field of a liquid crystal.</h2>
+    <p class="sec-sub">The flow analogy works, but real fiber alignment is better described as an ordered medium settling into its lowest-energy configuration. This is the picture I have been developing most recently, and it is more physically principled than simply asking for the smoothest interpolation.</p>
+    <div class="prose">
+      <p>A nematic liquid crystal is a material whose molecules have no positional order but share a preferred axis, the <b>director</b>. Modeling tissue this way treats the fiber direction as a unit-length director field that bends, splays, and twists to minimize the Frank-Oseen elastic energy, subject to the directions known on the boundary. Reframing fiber generation as a constrained energy minimization, rather than a smoothest-path interpolation, is what distinguishes the three formulations below.</p>
+    </div>
+    <div class="models">
+      <div class="model"><div class="tag">Model A</div><h4>Laplace</h4><p>The smoothest possible coordinate lines connecting the boundaries. Simple, but the field has no physical constraint beyond smoothness.</p></div>
+      <div class="model"><div class="tag">Model B</div><h4>Stokes flow</h4><p>Streamlines of an incompressible viscous flow. Adds a divergence-free constraint, which shapes the paths physically.</p></div>
+      <div class="model hl"><div class="tag">Model C · focus</div><h4>Frank-Oseen</h4><p>A unit-length director that minimizes liquid-crystal elastic energy. The tissue behaves like an ordered medium, and singularities and defects are handled naturally.</p></div>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/stokes/lc-director.jpg" alt="Frank-Oseen director field in a square domain" onerror="imgFail(this)"><figcaption><b>Director field.</b> A smooth Frank-Oseen director transitioning between boundary conditions, coming straight from the energy minimization rather than from interpolation.</figcaption></figure>
+      <figure><img src="assets/stokes/lc-singularity.jpg" alt="Hedgehog singularity in a director field" onerror="imgFail(this)"><figcaption><b>Singularities, handled.</b> The formulation resolves a hedgehog singularity and conflicting corner boundary conditions cleanly, which is where smoothest-interpolation schemes tend to struggle.</figcaption></figure>
+    </div>
+    <div class="prose">
+      <p>Because the director must stay on the unit sphere, the minimization is constrained. Rather than a saddle-point Newton solve, I use a <b>projected gradient descent</b>: take an energy-reducing step, then project the field back onto the unit sphere, and repeat until it converges, with the surface-tangency condition imposed as a penalty. The same machinery extends to studying topological defects in the field and where the model reaches its limits.</p>
+    </div>
+    <div class="spec"><span>Frank-Oseen elastic energy</span><span>Unit-norm director constraint</span><span>Projected gradient descent</span><span>Penalty-enforced tangency BC</span><span>Singularity &amp; defect analysis</span><span>FEniCSx</span></div>
+  </div>
+</section>
+
+<!-- HEART + MUSCLE -->
+<section class="blk" id="heart">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">04 / HEART AND MUSCLE</div>
+    <h2 class="sec-h display">From a left ventricle to a calf muscle.</h2>
+    <p class="sec-sub">The director-field method has a natural home in the heart, where the fiber angles at the inner and outer walls are known from imaging, and the field in between must be filled in. The same solver then carries over to skeletal muscle.</p>
+    <div class="prose">
+      <p>For the left ventricle, the wall directions are prescribed across the transmural and apicobasal coordinates, and the Frank-Oseen problem is solved to recover a smooth fiber field throughout the muscle wall, the third coordinate following from the other two. This reconstructs the characteristic helical turning of cardiac fibers, which is what sets how the ventricle contracts and how electrical activation propagates through it.</p>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/stokes/lc-ventricle.png" alt="Reconstructed left-ventricle fiber field" onerror="imgFail(this)"><figcaption><b>Left ventricle.</b> A reconstructed cardiac fiber field, solved from boundary directions known at the heart walls.</figcaption></figure>
+      <figure><img src="assets/stokes/lc-skeletal.jpg" alt="Liquid-crystal fiber field on a skeletal muscle" onerror="imgFail(this)"><figcaption><b>Skeletal muscle.</b> The director-field fiber result on a skeletal muscle, where the problem is solved in a single pass.</figcaption></figure>
+    </div>
+    <div class="prose">
+      <p>On skeletal muscle the two pictures can be compared head to head. The Frank-Oseen director field and the Stokes-flow field agree to a <b>mean of 5.2 degrees and a median of 3.8 degrees</b>, close, but meaningfully different, which is exactly the kind of gap worth understanding: it marks where the smoothest divergence-free flow and the lowest-energy ordered medium genuinely disagree about how a fiber should run.</p>
+    </div>
+    <div class="mcards">
+      <div class="mcard"><div class="v">5.2<small>°</small></div><div class="l">Mean flow vs director</div></div>
+      <div class="mcard"><div class="v">3.8<small>°</small></div><div class="l">Median flow vs director</div></div>
+      <div class="mcard"><div class="v">1</div><div class="l">Solve per muscle (vs heart)</div></div>
+      <div class="mcard"><div class="v">2</div><div class="l">Tissue types (muscle, heart)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTCOME -->
+<section class="blk" id="outcome">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">05 / OUTCOME</div>
+    <h2 class="sec-h display">A principled, testable fiber field.</h2>
+    <div class="prose">
+      <p>Taken together, the two approaches turn fiber generation from an ad hoc interpolation into a physics question with a clear answer to interrogate: a viscous flow on one hand, an energy-minimizing ordered medium on the other, with a measured gap between them. The director-field formulation in particular brings the language of liquid-crystal physics, elastic energy, the unit-norm constraint, singularities, and topological defects, to a biomechanics problem that has usually been handled with rule-based interpolation.</p>
+      <p>Ongoing directions include drawing accurate boundary directions from OpenSim, extending the comparison across more muscles, a sensitivity analysis of the Frank-Oseen field to match what was done for the flow, and tracing how these fiber differences propagate into mechanical contraction and electrical activation, with diffusion tensor imaging as the eventual reference standard.</p>
+    </div>
+    <figure><img src="assets/stokes/dti-tractography.jpg" alt="Diffusion tensor imaging fiber tractography" onerror="imgFail(this)"><figcaption><b>The reference standard.</b> Diffusion-tensor-imaging tractography, the in vivo measurement both computational pictures are ultimately built to approximate and to be validated against.</figcaption></figure>
+  </div>
+</section>
+
+<section class="blk" id="documents">
+  <div class="wrap reveal" style="text-align:center">
+    <div class="sec-no grad-text">DOCUMENTS</div>
+    <h2 class="sec-h display" style="max-width:none;margin:10px 0 22px">Read the full work.</h2>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn" href="assets/docs/bps-poster.pdf" target="_blank" rel="noreferrer">Biophysical Society Poster (PDF) &#8599;</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div style="color:var(--txt);font-weight:600;margin-bottom:6px">Fiber orientation from flow and liquid crystals</div>
+      <div style="font-size:13px">J. Admiraal, I. S. Devold, M. E. Rognes, P. Rangamani. UC San Diego and Simula Research Laboratory. Flow results presented at the Biophysical Society meeting. Ongoing, unpublished research.</div>
+    </div>
+    <a class="btn" href="index.html">&larr; Back to portfolio</a>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><img id="lbimg" src="" alt=""></div>
+
+<script>
+  function imgFail(el){ const fb=document.createElement("div"); fb.className="imgfallback"; fb.textContent="Figure"; el.replaceWith(fb); }
+  const lb=document.getElementById("lb"), lbimg=document.getElementById("lbimg");
+  document.addEventListener("click",(e)=>{
+    const img=e.target.closest("figure img");
+    if(img){ lbimg.src=img.src; lb.classList.add("open"); document.body.style.overflow="hidden"; return; }
+    if(e.target.closest("#lb")){ lb.classList.remove("open"); lbimg.src=""; document.body.style.overflow=""; }
+  });
+  document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&lb.classList.contains("open")){ lb.classList.remove("open"); document.body.style.overflow=""; }});
+  const nav=document.getElementById("nav"), bar=document.getElementById("progress");
+  function onScroll(){ nav.classList.toggle("scrolled",scrollY>30); const h=document.documentElement.scrollHeight-innerHeight; bar.style.width=(h>0?(scrollY/h*100):0)+"%"; }
+  onScroll(); addEventListener("scroll",onScroll,{passive:true});
+  const io=new IntersectionObserver((es)=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}}),{threshold:0.1});
+  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

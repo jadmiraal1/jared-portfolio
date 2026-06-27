@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dynamics of a Curved Soap Film, Jared Admiraal</title>
+<meta name="description" content="Extending thin-film soap-film theory from flat sheets to a curved annular geometry using long-wave asymptotics and a symbolic computer-algebra reduction. UC San Diego." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0b0d; --bg-2:#101216; --panel:#14161b;
+    --line:rgba(255,255,255,0.10); --line-strong:rgba(255,255,255,0.22);
+    --txt:#f4f5f7; --muted:#9aa0a8; --muted-2:#6c727b;
+    --maxw:1120px; --ease:cubic-bezier(.2,.7,.2,1);
+    --grad:linear-gradient(90deg,#9fd6ff,#c9b8ff 45%,#ffc1e3);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .display{font-family:"Space Grotesk","Inter",sans-serif;letter-spacing:-0.02em;line-height:1.04}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:60}
+  header.nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .4s var(--ease),border-color .4s;border-bottom:1px solid transparent}
+  header.nav.scrolled{background:rgba(10,11,13,0.78);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .back{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted);transition:color .25s}
+  .back:hover{color:var(--txt)}
+  .nav-sections{display:flex;gap:24px}
+  .nav-sections a{font-size:13px;color:var(--muted);transition:color .25s}
+  .nav-sections a:hover{color:var(--txt)}
+  @media(max-width:900px){.nav-sections{display:none}}
+  .hero{position:relative;min-height:82vh;display:flex;align-items:flex-end;padding-bottom:7vh;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero-img{position:absolute;inset:0;z-index:0}
+  .hero-img img{width:100%;height:100%;object-fit:cover;opacity:.38}
+  .hero-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,11,13,.55) 0%,rgba(10,11,13,.20) 38%,rgba(10,11,13,.96) 100%)}
+  .hero-c{position:relative;z-index:2;width:100%}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--grad)}
+  .hero h1{font-size:clamp(34px,6vw,76px);font-weight:700;margin-top:16px;max-width:18ch}
+  .hero .lede{margin-top:22px;max-width:64ch;color:#cfd3d8;font-size:clamp(16px,1.7vw,19px)}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .chip{border:1px solid var(--line-strong);border-radius:999px;padding:8px 15px;font-size:13px;background:rgba(10,11,13,.4);backdrop-filter:blur(6px)}
+  .chip b{font-family:"Space Grotesk";font-weight:700}
+  section.blk{padding:clamp(56px,8vh,96px) 0;border-top:1px solid var(--line)}
+  section.blk:first-of-type{border-top:0}
+  .sec-no{font-family:"Space Grotesk";font-size:13px;letter-spacing:.1em;font-weight:700}
+  .sec-h{font-size:clamp(26px,4vw,44px);font-weight:700;margin:10px 0 6px;max-width:22ch}
+  .sec-sub{color:var(--muted);font-size:15px;max-width:62ch;margin-bottom:30px}
+  .prose{max-width:72ch}
+  .prose p{color:#cfd3d8;margin-bottom:16px;font-size:16px}
+  .prose p.note{color:var(--muted);font-size:14.5px}
+  .lead{font-size:18px !important;color:#e6e8ec !important}
+  figure{margin:26px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+  figure img{width:100%;cursor:zoom-in;transition:opacity .3s;background:#0c0d10}
+  figure.diagram img{cursor:default;padding:10px}
+  figcaption{padding:13px 16px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+  figcaption b{color:var(--txt);font-weight:600}
+  .imgfallback{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--muted-2);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:repeating-linear-gradient(135deg,#15171c 0 14px,#101216 14px 28px)}
+  .phys{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0}
+  .pcard{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel)}
+  .pcard h4{font-size:15px;font-weight:600;margin-bottom:6px}
+  .pcard p{font-size:14px;color:var(--muted);line-height:1.55}
+  @media(max-width:760px){.phys{grid-template-columns:1fr}}
+  .callout{border-left:2px solid transparent;border-image:var(--grad) 1;padding:4px 0 4px 18px;margin:22px 0;color:#e6e8ec;font-size:16px}
+  .spec{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+  .spec span{font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:5px 11px;color:var(--muted)}
+  .loop{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:22px;margin:24px 0}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  footer{border-top:1px solid var(--line);padding:46px 0;color:var(--muted-2)}
+  .foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line-strong);border-radius:999px;padding:11px 20px;font-size:14px;font-weight:600;color:var(--txt);transition:background .25s,color .25s}
+  .btn:hover{background:var(--txt);color:#000}
+  .lb{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(5,6,8,.9);backdrop-filter:blur(6px);cursor:zoom-out}
+  .lb.open{display:flex}
+  .lb img{max-width:96vw;max-height:92vh;border:1px solid var(--line-strong);border-radius:10px}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="back" href="index.html">&larr; &nbsp;Jared Admiraal</a>
+    <nav class="nav-sections">
+      <a href="#question">Question</a>
+      <a href="#physics">New physics</a>
+      <a href="#method">Method</a>
+      <a href="#validation">Validation</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-img"><img src="assets/soap/soap-bubble.jpg" alt="Soap film interference colors" onerror="this.parentElement.style.background='#101216';this.remove()"></div>
+  <div class="wrap hero-c">
+    <span class="eyebrow">UC San Diego · Advised by S. Llewellyn Smith &amp; P. Rangamani</span>
+    <h1 class="display">Dynamics of a curved soap film</h1>
+    <p class="lede">Extending the classical theory of flat soap films to a film bent into a closed ring, where curvature introduces physics a flat sheet simply cannot show, using long-wave asymptotics and a symbolic computer-algebra reduction.</p>
+    <div class="chips">
+      <span class="chip">Asymptotic analysis</span>
+      <span class="chip">Surfactant hydrodynamics</span>
+      <span class="chip">Computer-algebra reduction</span>
+      <span class="chip">In-progress research</span>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section class="blk" id="overview">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">00 / OVERVIEW</div>
+    <h2 class="sec-h display">A two-dimensional fluid, bent into a ring.</h2>
+    <div class="prose">
+      <p class="lead">A soap film is a few microns thick but centimetres across, so it behaves almost like a two-dimensional fluid. Classical theory describes flat films very well. I am working out what changes when the film is curved into a closed annular ring.</p>
+      <p>The project, advised by Stefan Llewellyn Smith and Padmini Rangamani at UC San Diego, takes the well-established flat soap-film theory and asks for its analogue in polar geometry, where the thin direction is radial and the slow dynamics live around the ring. It is ongoing, unpublished research, so this page stays at the level of the physical ideas and the method; the derivations and code are not shown.</p>
+    </div>
+    <figure><img src="assets/soap/annular-geometry.png" alt="Geometry of a thin annular soap film" onerror="imgFail(this)"><figcaption><b>The set-up.</b> A thin annular film of viscous liquid: a centreline radius that can vary around the ring, a small half-thickness, and two free surfaces each carrying its own surfactant. The thin direction is radial; the single slow direction is the angle around the ring.</figcaption></figure>
+  </div>
+</section>
+
+<!-- QUESTION -->
+<section class="blk" id="question">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">01 / THE QUESTION</div>
+    <h2 class="sec-h display">What does curvature add?</h2>
+    <p class="sec-sub">Flat soap-film theory reduces the full three-dimensional flow to a compact set of equations for the in-plane motion, the thickness, and the surfactant. The question is what the same reduction looks like once the film is wrapped into a ring.</p>
+    <div class="prose">
+      <p>Think of the cross-section of a cylindrical soap bubble, or a thin liquid ring lying in a plane. Bending the film introduces effects that are absent by symmetry in a flat sheet, and the goal is to capture all of them in one consistent reduced model rather than bolting them on one at a time.</p>
+    </div>
+    <div class="phys">
+      <div class="pcard"><h4>Laplace pressure</h4><p>Curvature means a static film needs a pressure jump across it just to hold its shape, the familiar bubble pressure.</p></div>
+      <div class="pcard"><h4>Centrifugal drive</h4><p>Swirl around the ring pushes the film outward, a genuinely new forcing term with no flat-film counterpart.</p></div>
+      <div class="pcard"><h4>Hoop Marangoni coupling</h4><p>Surface-tension gradients now act through the curved normal pressure, not only through the in-plane surface stress.</p></div>
+      <div class="pcard"><h4>A bending mode</h4><p>If the ring's centreline is not a perfect circle, surface tension snaps it back, a fast mode the flat theory removes by assuming symmetry.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section class="blk" id="method">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">02 / THE METHOD</div>
+    <h2 class="sec-h display">Reducing the flow to its slow heartbeat.</h2>
+    <p class="sec-sub">The full problem is a three-dimensional free-surface flow with surfactant on both faces. The aim is a small, closed set of one-dimensional evolution equations that captures its long-time behavior, derived rigorously rather than guessed.</p>
+    <div class="prose">
+      <p>The tool is a long-wave (lubrication) asymptotic expansion: because the film is thin compared with the scale of variation around the ring, the dynamics collapse onto a slow manifold. Carrying that expansion out by hand, in polar geometry, with two independent surfaces, soluble surfactant, and all the metric corrections, would run to thousands of terms, so I do it with a symbolic computer-algebra workflow.</p>
+      <p>The workflow follows a residual-driven idea: start from the crudest possible guess, substitute it into every governing equation and boundary condition to measure how badly each is violated, use simple solvability operators to turn those residuals into corrections, and repeat until nothing is left to correct. Because the fixed point is defined by all residuals vanishing, each individual update can stay simple, and correctness is certified at the end by checking the residuals and by physical sanity tests rather than by trusting any single algebraic step.</p>
+    </div>
+    <div class="loop">
+      <svg viewBox="0 0 880 150" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9fd6ff"/><stop offset="0.5" stop-color="#c9b8ff"/><stop offset="1" stop-color="#ffc1e3"/></linearGradient>
+          <marker id="a" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9aa0a8"/></marker>
+        </defs>
+        <g>
+          <rect x="8" y="40" width="180" height="56" rx="9" fill="#14161b" stroke="rgba(255,255,255,0.14)"/>
+          <text x="98" y="66" fill="#e6e8ec" font-size="14" text-anchor="middle" font-weight="600">Guess</text>
+          <text x="98" y="84" fill="#9aa0a8" font-size="12" text-anchor="middle">crudest solution</text>
+          <line x1="190" y1="68" x2="226" y2="68" stroke="#9aa0a8" stroke-width="1.4" marker-end="url(#a)"/>
+          <rect x="228" y="40" width="190" height="56" rx="9" fill="#14161b" stroke="rgba(255,255,255,0.14)"/>
+          <text x="323" y="66" fill="#e6e8ec" font-size="14" text-anchor="middle" font-weight="600">Substitute</text>
+          <text x="323" y="84" fill="#9aa0a8" font-size="12" text-anchor="middle">measure residuals</text>
+          <line x1="420" y1="68" x2="456" y2="68" stroke="#9aa0a8" stroke-width="1.4" marker-end="url(#a)"/>
+          <rect x="458" y="40" width="200" height="56" rx="9" fill="#14161b" stroke="rgba(255,255,255,0.14)"/>
+          <text x="558" y="66" fill="#e6e8ec" font-size="14" text-anchor="middle" font-weight="600">Correct</text>
+          <text x="558" y="84" fill="#9aa0a8" font-size="12" text-anchor="middle">profile + evolution</text>
+          <line x1="660" y1="68" x2="696" y2="68" stroke="#9aa0a8" stroke-width="1.4" marker-end="url(#a)"/>
+          <rect x="698" y="40" width="174" height="56" rx="9" fill="none" stroke="url(#lg)" stroke-width="1.6"/>
+          <text x="785" y="66" fill="#e6e8ec" font-size="14" text-anchor="middle" font-weight="600">Residuals = 0?</text>
+          <text x="785" y="84" fill="#9aa0a8" font-size="12" text-anchor="middle">slow model</text>
+          <path d="M785,40 C785,16 323,16 323,40" fill="none" stroke="#6c727b" stroke-width="1.3" stroke-dasharray="5 5" marker-end="url(#a)"/>
+          <text x="554" y="14" fill="#9aa0a8" font-size="11.5" text-anchor="middle">repeat until nothing is left to correct</text>
+        </g>
+      </svg>
+    </div>
+    <div class="spec">
+      <span>Long-wave / lubrication asymptotics</span><span>Slow-manifold reduction</span><span>Perturbation theory</span><span>Symbolic computer algebra</span><span>Marangoni surfactant transport</span>
+    </div>
+  </div>
+</section>
+
+<!-- VALIDATION -->
+<section class="blk" id="validation">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">03 / VALIDATION &amp; SCOPE</div>
+    <h2 class="sec-h display">Trusting the answer.</h2>
+    <p class="sec-sub">A symbolic derivation this long is only believable if it reproduces what is already known and survives independent physical checks.</p>
+    <div class="prose">
+      <p>The reduced model is built so that the familiar cases, including the flat-film theory and the symmetric ring, fall out as special cases of the general result rather than as separate derivations. Recovering those known limits is the first test; a verification suite of physical sanity checks is the second. The general formulation keeps the two surfaces independent and lets the ring's centreline move, so the simpler symmetric configurations are recovered by substitution at the end.</p>
+      <p class="note">The work is in progress and unpublished. The aim is a single consistent reduced model for the curved film, with the longer-term interest in extending the same machinery to other geometries.</p>
+    </div>
+    <div class="callout">The throughline of the project is method as much as result: taking a derivation that is impractical by hand and making it tractable, checkable, and extensible through disciplined asymptotics and computer algebra.</div>
+    <div class="spec">
+      <span>Fluid mechanics</span><span>Free-surface flows</span><span>Surfactant &amp; Marangoni effects</span><span>Asymptotic methods</span><span>Symbolic computation</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div style="color:var(--txt);font-weight:600;margin-bottom:6px">Dynamics of a curved soap film</div>
+      <div style="font-size:13px">Jared Admiraal, advised by S. Llewellyn Smith and P. Rangamani, UC San Diego. Ongoing, unpublished research.</div>
+    </div>
+    <a class="btn" href="index.html">&larr; Back to portfolio</a>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><img id="lbimg" src="" alt=""></div>
+
+<script>
+  function imgFail(el){ const fb=document.createElement("div"); fb.className="imgfallback"; fb.textContent="Figure"; el.replaceWith(fb); }
+  const lb=document.getElementById("lb"), lbimg=document.getElementById("lbimg");
+  document.addEventListener("click",(e)=>{
+    const img=e.target.closest("figure img");
+    if(img){ lbimg.src=img.src; lb.classList.add("open"); document.body.style.overflow="hidden"; return; }
+    if(e.target.closest("#lb")){ lb.classList.remove("open"); lbimg.src=""; document.body.style.overflow=""; }
+  });
+  document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&lb.classList.contains("open")){ lb.classList.remove("open"); document.body.style.overflow=""; }});
+  const nav=document.getElementById("nav"), bar=document.getElementById("progress");
+  function onScroll(){ nav.classList.toggle("scrolled",scrollY>30); const h=document.documentElement.scrollHeight-innerHeight; bar.style.width=(h>0?(scrollY/h*100):0)+"%"; }
+  onScroll(); addEventListener("scroll",onScroll,{passive:true});
+  const io=new IntersectionObserver((es)=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}}),{threshold:0.1});
+  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

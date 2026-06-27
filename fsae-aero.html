@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TR26 Aerodynamic Package, Jared Admiraal</title>
+<meta name="description" content="Design, CFD, wind-tunnel validation, structures, and manufacturing of the Triton Racing TR26 Formula SAE aerodynamic package." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0b0d; --bg-2:#101216; --panel:#14161b;
+    --line:rgba(255,255,255,0.10); --line-strong:rgba(255,255,255,0.22);
+    --txt:#f4f5f7; --muted:#9aa0a8; --muted-2:#6c727b;
+    --maxw:1120px; --ease:cubic-bezier(.2,.7,.2,1);
+    --grad:linear-gradient(90deg,#9fd6ff,#c9b8ff 45%,#ffc1e3);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .display{font-family:"Space Grotesk","Inter",sans-serif;letter-spacing:-0.02em;line-height:1.04}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* progress + nav */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:60}
+  header.nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .4s var(--ease),border-color .4s;border-bottom:1px solid transparent}
+  header.nav.scrolled{background:rgba(10,11,13,0.78);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .back{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted);transition:color .25s}
+  .back:hover{color:var(--txt)}
+  .nav-sections{display:flex;gap:24px}
+  .nav-sections a{font-size:13px;color:var(--muted);transition:color .25s}
+  .nav-sections a:hover{color:var(--txt)}
+  @media(max-width:900px){.nav-sections{display:none}}
+
+  /* hero */
+  .hero{position:relative;min-height:88vh;display:flex;align-items:flex-end;padding-bottom:7vh;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero-img{position:absolute;inset:0;z-index:0}
+  .hero-img img{width:100%;height:100%;object-fit:cover;opacity:.5}
+  .hero-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,11,13,.55) 0%,rgba(10,11,13,.15) 38%,rgba(10,11,13,.96) 100%)}
+  .hero-c{position:relative;z-index:2;width:100%}
+  .eyebrow{font-size:12px;letter-spacing:.26em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--grad)}
+  .hero h1{font-size:clamp(38px,7vw,88px);font-weight:700;margin-top:16px;max-width:16ch}
+  .hero .lede{margin-top:22px;max-width:64ch;color:#cfd3d8;font-size:clamp(16px,1.7vw,19px)}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .chip{border:1px solid var(--line-strong);border-radius:999px;padding:8px 15px;font-size:13px;background:rgba(10,11,13,.4);backdrop-filter:blur(6px)}
+  .chip b{font-family:"Space Grotesk";font-weight:700}
+
+  /* stat strip */
+  .strip{border-bottom:1px solid var(--line);background:var(--bg-2)}
+  .strip-in{display:flex;flex-wrap:wrap}
+  .stat{flex:1 1 180px;padding:26px 24px;border-left:1px solid var(--line)}
+  .stat:first-child{border-left:0}
+  .stat .k{font-family:"Space Grotesk";font-size:clamp(22px,2.6vw,30px);font-weight:700}
+  .stat .l{margin-top:5px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+
+  /* sections */
+  section.blk{padding:clamp(56px,8vh,96px) 0;border-top:1px solid var(--line)}
+  section.blk:first-of-type{border-top:0}
+  .sec-no{font-family:"Space Grotesk";font-size:13px;letter-spacing:.1em;font-weight:700}
+  .sec-h{font-size:clamp(26px,4vw,44px);font-weight:700;margin:10px 0 6px;max-width:20ch}
+  .sec-sub{color:var(--muted);font-size:15px;max-width:60ch;margin-bottom:30px}
+  .prose{max-width:72ch}
+  .prose p{color:#cfd3d8;margin-bottom:16px;font-size:16px}
+  .prose p.note{color:var(--muted);font-size:14.5px}
+  .lead{font-size:18px !important;color:#e6e8ec !important}
+
+  /* figures */
+  figure{margin:26px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+  figure img{width:100%;cursor:zoom-in;transition:opacity .3s;background:#0c0d10}
+  figure img:hover{opacity:.92}
+  figcaption{padding:13px 16px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+  figcaption b{color:var(--txt);font-weight:600}
+  .fig-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .fig-grid figure{margin:0}
+  @media(max-width:760px){.fig-grid{grid-template-columns:1fr}}
+  .imgfallback{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--muted-2);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:repeating-linear-gradient(135deg,#15171c 0 14px,#101216 14px 28px)}
+
+  /* data tables */
+  .dt{width:100%;border-collapse:collapse;margin:22px 0;font-size:13.5px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .dt caption{caption-side:top;text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2);margin-bottom:10px}
+  .dt th,.dt td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  .dt thead th{background:var(--bg-2);font-weight:600;color:var(--txt);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+  .dt tbody tr:last-child td{border-bottom:0}
+  .dt td:not(:first-child),.dt th:not(:first-child){font-variant-numeric:tabular-nums}
+  .dt tr.hl td{background:rgba(159,214,255,0.06);font-weight:600}
+  .scroll-x{overflow-x:auto}
+
+  /* metric cards */
+  .mcards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  .mcard{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel)}
+  .mcard .v{font-family:"Space Grotesk";font-size:clamp(22px,2.4vw,28px);font-weight:700}
+  .mcard .v small{font-size:13px;color:var(--muted);font-weight:500}
+  .mcard .l{margin-top:5px;font-size:12px;color:var(--muted);letter-spacing:.03em}
+  @media(max-width:760px){.mcards{grid-template-columns:1fr 1fr}}
+
+  .callout{border-left:2px solid transparent;border-image:var(--grad) 1;padding:4px 0 4px 18px;margin:22px 0;color:#e6e8ec;font-size:16px}
+  .spec{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+  .spec span{font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:5px 11px;color:var(--muted)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:46px 0;color:var(--muted-2)}
+  .foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line-strong);border-radius:999px;padding:11px 20px;font-size:14px;font-weight:600;color:var(--txt);transition:background .25s,color .25s}
+  .btn:hover{background:var(--txt);color:#000}
+
+  /* lightbox */
+  .lb{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(5,6,8,.9);backdrop-filter:blur(6px);cursor:zoom-out}
+  .lb.open{display:flex}
+  .lb img{max-width:96vw;max-height:92vh;border:1px solid var(--line-strong);border-radius:10px}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="back" href="index.html">&larr; &nbsp;Jared Admiraal</a>
+    <nav class="nav-sections">
+      <a href="#design">Design</a>
+      <a href="#cfd">CFD</a>
+      <a href="#envelope">Envelope</a>
+      <a href="#tunnel">Wind Tunnel</a>
+      <a href="#structures">Structures</a>
+      <a href="#manufacturing">Manufacturing</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-img"><img src="assets/fsae/car-hero.jpg" alt="TR26 Formula SAE car with aerodynamic package" onerror="this.parentElement.style.background='#101216';this.remove()"></div>
+  <div class="wrap hero-c">
+    <span class="eyebrow">Triton Racing · Formula SAE · 2025–26</span>
+    <h1 class="display">TR26 Aerodynamic Package</h1>
+    <p class="lede">A full aerodynamic development program for UC San Diego's Formula SAE car: airfoil selection and 2D optimization, a full-car CFD study, a wind-tunnel validation campaign, composite structures, and the manufacturing that turned it into parts on the car.</p>
+    <div class="chips">
+      <span class="chip"><b>C<sub>L</sub> 2.72</b> · downforce</span>
+      <span class="chip"><b>179 N</b> downforce @ 15 m/s</span>
+      <span class="chip"><b>L/D 1.37</b></span>
+      <span class="chip"><b>GCI &lt; 1%</b> grid-independent</span>
+      <span class="chip">CFD + wind tunnel + composites</span>
+      <span class="chip"><b>Aero &amp; Vehicle Dynamics Lead</b> · 2026–27</span>
+    </div>
+  </div>
+</section>
+
+<!-- STAT STRIP -->
+<div class="strip">
+  <div class="wrap"><div class="strip-in">
+    <div class="stat"><div class="k">179 N</div><div class="l">Downforce @ 15 m/s</div></div>
+    <div class="stat"><div class="k">131 N</div><div class="l">Drag @ 15 m/s</div></div>
+    <div class="stat"><div class="k">59.5 / 40.5</div><div class="l">Front / rear balance</div></div>
+    <div class="stat"><div class="k">3.2 × 10⁶</div><div class="l">Reynolds number</div></div>
+  </div></div>
+</div>
+
+<!-- OVERVIEW -->
+<section class="blk" id="overview">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">00 / OVERVIEW</div>
+    <h2 class="sec-h display">From first principles to parts on the car.</h2>
+    <div class="prose">
+      <p class="lead">I led the aerodynamic development of Triton Racing's TR26 car across the full engineering pipeline: setting the design philosophy, selecting and optimizing the airfoils, running the full-car CFD, validating trends in the wind tunnel, designing the composite structures, and manufacturing the parts.</p>
+      <p>I'm continuing with the team as both <b>Aerodynamics Lead and Vehicle Dynamics Lead</b> for the 2026–27 season, owning the aero package and the vehicle-dynamics work it feeds into.</p>
+      <p>The package produces <b>179 N of downforce against 131 N of drag at the 15 m/s competition-average speed</b> (C<sub>L</sub> = 2.72, C<sub>D</sub> = 1.99, L/D = 1.37), with a 59.5% front aerodynamic balance. Every headline number is backed by a grid-independence study, a force-monitor convergence assessment, and an independent wind-tunnel check on the trends. All simulation was performed in ANSYS Fluent 2025 R2; structures were analyzed in FEA and validated on custom test rigs; parts were built in-house from carbon fiber.</p>
+      <p class="note">Context: the team had not completed an aerodynamics package in the previous two seasons. The brief was deliberately disciplined, establish the fundamentals, keep the package simple enough to finish and manufacture well, and do it for under $2,000, engineering understanding over complexity.</p>
+    </div>
+    <figure class="reveal"><img src="assets/fsae/driver-michigan.jpg" alt="Jared Admiraal with the TR26 car at FSAE Michigan" onerror="imgFail(this)"><figcaption><b>Competition.</b> With the TR26 car at FSAE Michigan, Michigan International Speedway.</figcaption></figure>
+  </div>
+</section>
+
+<!-- DESIGN -->
+<section class="blk" id="design">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">01 / DESIGN &amp; 2D OPTIMIZATION</div>
+    <h2 class="sec-h display">Choosing and tuning the wings.</h2>
+    <p class="sec-sub">Each wing started as an airfoil-selection problem, then a 2D CFD optimization to squeeze the most downforce out of the allowed envelope before committing to the full car.</p>
+    <div class="prose">
+      <p>The wings were selected for high lift that holds up in the dirty, low-Reynolds air of an FSAE car (chord Reynolds number ≈ 5×10⁵, N<sub>crit</sub> = 5). The <b>front wing</b> is a two-element design, a NACA 4412 main element (300 mm chord, 5° AoA) and a Selig S1223 high-lift flap (180 mm chord, ~25° AoA). The <b>rear wing</b> is a three-element stack, an Eppler 423 main and flap (480 mm and 200 mm) topped by a Selig S1223 (125 mm), with the slot gaps tuned for attached flow over the whole stack.</p>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/airfoil-polars.jpg" alt="Airfoil polar curves" onerror="imgFail(this)"><figcaption><b>Airfoil selection.</b> Lift, drag, and efficiency polars used to down-select the wing profiles against the downforce target.</figcaption></figure>
+      <figure><img src="assets/fsae/doe-scatter.jpg" alt="Parametric design-of-experiments scatter" onerror="imgFail(this)"><figcaption><b>Parametric DoE.</b> Each point is a CFD design candidate; the front wing used 50 design points and the rear wing a 30-point optimal space-filling DoE feeding a response surface.</figcaption></figure>
+    </div>
+    <div class="prose">
+      <p>The optimization was a real design-of-experiments study, not hand-tuning. Wing chords, angles of attack, and slot gaps were swept across dozens of CFD design points to fit a response-surface metamodel, which was then searched for the configuration that maximized downforce inside the rules envelope. The front wing reached a 2D lift coefficient of <b>2.49</b>; the optimized rear wing reached a 3D C<sub>L</sub> of <b>−3.93</b> at C<sub>D</sub> 0.118. The 2D wing cases were run wall-resolved (y⁺ ≈ 1, 14 inflation layers, 0.021 mm first cell) so the boundary layer and any separation were captured directly.</p>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/fw-velocity-2d.jpg" alt="2D velocity contour around front wing" onerror="imgFail(this)"><figcaption><b>Front-wing velocity field.</b> Flow accelerating through the wing–ground gap, the velocity-side signature of the suction that makes downforce.</figcaption></figure>
+      <figure><img src="assets/fsae/fw-pressure-2d.jpg" alt="2D pressure contour around front wing" onerror="imgFail(this)"><figcaption><b>Front-wing pressure field.</b> Strong suction on the underside, with smooth pressure recovery toward the trailing edge confirming attached flow.</figcaption></figure>
+    </div>
+    <div class="callout">A lesson banked for next year: the parametric study should use more than 50 points, and blunted trailing edges in 2D pushed the predicted optimum past the real stall angle, both now documented for the next design cycle.</div>
+  </div>
+</section>
+
+<!-- FULL CAR CFD -->
+<section class="blk" id="cfd">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">02 / FULL-CAR CFD</div>
+    <h2 class="sec-h display">The whole car, not just the wings.</h2>
+    <p class="sec-sub">Wings designed in isolation behave differently once they sit behind a chassis, wheels, and a roll-hoop wake. A full-car RANS study quantified the real package and where its load actually comes from.</p>
+    <div class="prose">
+      <p>The baseline ran at 15 m/s with a moving ground plane and rotating wheels to reproduce true on-track flow, using the GEKO (k-ω generalized) turbulence model on a 7-million-cell poly-hexcore mesh with y⁺ ≈ 50 wall treatment. A three-level <b>grid-independence study</b> (3.3 / 4.8 / 7.0 M cells) following Celik et al. confirmed the result is a property of the physics, not the mesh: lift changed under 1% between the medium and fine meshes and the fine-mesh GCI was 0.93%.</p>
+    </div>
+
+    <div class="mcards">
+      <div class="mcard"><div class="v">2.716</div><div class="l">Lift coefficient C<sub>L</sub></div></div>
+      <div class="mcard"><div class="v">1.989</div><div class="l">Drag coefficient C<sub>D</sub></div></div>
+      <div class="mcard"><div class="v">1.366</div><div class="l">Lift-to-drag ratio</div></div>
+      <div class="mcard"><div class="v">0.93<small>%</small></div><div class="l">Fine-mesh GCI on C<sub>L</sub></div></div>
+    </div>
+
+    <figure><img src="assets/fsae/cfd-streamlines.jpg" alt="Velocity magnitude streamlines around the full car" onerror="imgFail(this)"><figcaption><b>Full-car flow field.</b> Velocity-magnitude streamlines over the complete package with moving ground and rotating wheels.</figcaption></figure>
+
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/surface-cp.jpg" alt="Surface pressure coefficient distribution" onerror="imgFail(this)"><figcaption><b>Surface pressure (C<sub>p</sub>).</b> Stagnation (red) at leading edges and wheel faces; strong suction (C<sub>p</sub> ≈ −2 to −3) on the front-wing underside is the source of its download.</figcaption></figure>
+      <figure><img src="assets/fsae/velocity-wake.jpg" alt="Velocity field on the symmetry plane showing wake" onerror="imgFail(this)"><figcaption><b>Wake structure.</b> The roll-hoop separation dumps low-energy flow straight into the path of the rear wing, starving it of dynamic pressure.</figcaption></figure>
+    </div>
+
+    <div class="prose">
+      <p>Resolving the vertical force by component showed the rear wing (−95 N) and front wing (−82 N) do almost all the work, the chassis is vertically near-neutral while carrying roughly three-quarters of the drag, and the exposed wheels nearly cancel. The single most actionable finding came from the wake: because the roll-hoop wake convects into the rear wing, the rear wing under-performs relative to its planform, pointing at cleaning up that wake as the clearest future gain.</p>
+    </div>
+
+    <div class="scroll-x">
+    <table class="dt">
+      <caption>Component vertical-force breakdown at 15 m/s (negative = downforce)</caption>
+      <thead><tr><th>Component</th><th>Vertical force (N)</th></tr></thead>
+      <tbody>
+        <tr><td>Front wing</td><td>−81.92</td></tr>
+        <tr><td>Rear wing</td><td>−95.38</td></tr>
+        <tr><td>Front wheel</td><td>+10.56</td></tr>
+        <tr><td>Rear wheel</td><td>−10.98</td></tr>
+        <tr><td>Chassis</td><td>−0.18</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="scroll-x">
+    <table class="dt">
+      <caption>Grid-independence study</caption>
+      <thead><tr><th>Mesh</th><th>Cells</th><th>C<sub>L</sub></th><th>C<sub>D</sub></th><th>L/D</th></tr></thead>
+      <tbody>
+        <tr><td>Coarse</td><td>3.3 M</td><td>2.667</td><td>2.007</td><td>1.329</td></tr>
+        <tr><td>Medium</td><td>4.8 M</td><td>2.717</td><td>1.989</td><td>1.366</td></tr>
+        <tr class="hl"><td>Fine (used)</td><td>7.0 M</td><td>2.741</td><td>1.990</td><td>1.377</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ENVELOPE -->
+<section class="blk" id="envelope">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">03 / OPERATING ENVELOPE</div>
+    <h2 class="sec-h display">How the car behaves on track.</h2>
+    <p class="sec-sub">A car never sits at one attitude. The package was swept across speed, pitch, heave, yaw, and roll, and a dedicated rotating-frame skidpad case captured true cornering, building a sensitivity map the vehicle-dynamics group can interpolate.</p>
+
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/speed-sweep.jpg" alt="Force scaling with speed" onerror="imgFail(this)"><figcaption><b>Speed sweep.</b> Downforce and drag scale cleanly with V² from 78 N at 10 m/s to 502 N at 25 m/s; coefficients vary &lt; 2%, i.e. effectively Reynolds-independent.</figcaption></figure>
+      <figure><img src="assets/fsae/pitch-sweep.jpg" alt="Pitch sensitivity sweep" onerror="imgFail(this)"><figcaption><b>Pitch sweep (dominant).</b> C<sub>L</sub> climbs from 2.47 at +0.5° (accel) to 3.43 at −2° (braking); balance migrates 45.7% → 70.5% front.</figcaption></figure>
+    </div>
+
+    <div class="prose">
+      <p>Pitch is by far the strongest sensitivity: nose-down braking loads the front wing and the underbody hard, swinging the aerodynamic balance by more than 20 points across the usable range. That migration, balance is not a fixed number, is exactly the kind of result the vehicle-dynamics group has to design the car around. The speed sweep's Reynolds-independence result is also what makes the reduced-scale wind-tunnel comparison defensible later.</p>
+    </div>
+
+    <div class="scroll-x">
+    <table class="dt">
+      <caption>Pitch sweep at 15 m/s (nose-up positive)</caption>
+      <thead><tr><th>Pitch</th><th>C<sub>L</sub></th><th>C<sub>D</sub></th><th>Front balance</th></tr></thead>
+      <tbody>
+        <tr><td>−2° (braking)</td><td>3.432</td><td>2.018</td><td>70.5%</td></tr>
+        <tr><td>−1°</td><td>3.332</td><td>1.999</td><td>70.5%</td></tr>
+        <tr class="hl"><td>0° (baseline)</td><td>2.716</td><td>1.989</td><td>59.5%</td></tr>
+        <tr><td>+0.5° (accel)</td><td>2.465</td><td>1.959</td><td>45.7%</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <figure><img src="assets/fsae/skidpad-flow.jpg" alt="Skidpad cornering flow field" onerror="imgFail(this)"><figcaption><b>Skidpad cornering simulation.</b> A rotating reference frame (R = 8.5 m, 1.3 g, ω = 1.225 rad/s) captures curved streamlines, differential wheel speeds, and the centripetal field together, effects no single straight-line sweep can show.</figcaption></figure>
+
+    <div class="prose">
+      <p>The skidpad case is the payoff of the sensitivity work. Against a straight-line run at the same 10.4 m/s, cornering <b>loses 38% of downforce</b> (the car is effectively at local yaw), <b>gains 6% drag</b>, and shifts the balance <b>12 points forward</b> to 71.5%, a migration that tends toward corner-entry understeer and feeds directly into the cornering grip budget. None of this appears in a symmetric straight-line simulation.</p>
+    </div>
+
+    <div class="scroll-x">
+    <table class="dt">
+      <caption>Skidpad corner vs. straight line at 10.41 m/s</caption>
+      <thead><tr><th>Quantity</th><th>Straight line</th><th>Skidpad corner</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td>Total downforce</td><td>84.8 N</td><td>52.4 N</td><td>−38.2%</td></tr>
+        <tr><td>Total drag</td><td>63.6 N</td><td>67.6 N</td><td>+6.3%</td></tr>
+        <tr><td>Front balance</td><td>59.5%</td><td>71.5%</td><td>+12.0 pts fwd</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- WIND TUNNEL -->
+<section class="blk" id="tunnel">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">04 / WIND-TUNNEL VALIDATION</div>
+    <h2 class="sec-h display">An independent physical check.</h2>
+    <p class="sec-sub">A 9% scale 3D-printed model was tested in the UC San Diego wind tunnel, deliberately not a one-to-one CFD match, but an honest check on whether the predicted trends show up in physical measurements.</p>
+
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/tunnel-setup.jpg" alt="Wind tunnel test setup with scale model" onerror="imgFail(this)"><figcaption><b>Test setup.</b> 9% model on the force balance, two support configurations (air- and ground-supported), three pitch angles, five flow speeds, with a zero-flow tare subtracted from every reading.</figcaption></figure>
+      <figure><img src="assets/fsae/axial-force.jpg" alt="Axial force versus velocity" onerror="imgFail(this)"><figcaption><b>Axial force vs. speed.</b> Force scales linearly with dynamic pressure (R² &gt; 0.996 on every fit), mirroring the CFD's V² scaling.</figcaption></figure>
+    </div>
+
+    <div class="prose">
+      <p>Two signatures the CFD predicted both showed up in the physical test: aerodynamic load scaling with dynamic pressure (R² &gt; 0.996), and a strong pitch dependence of the normal force (−12.7 N at braking pitch to −3.9 N at acceleration pitch), in the same direction as the CFD pitch sweep. To make a direct comparison, I ran one CFD case at the tunnel's exact proportions with a static ground. The dimensionless <b>normal-to-axial force ratio matched to 3.8%</b> (0.808 CFD vs 0.778 tunnel), meaning the simulation captures the shape of the load correctly. The absolute coefficients differ ~42%, entirely in the direction the known tunnel limitations predict: the uncorrected 4.8% blockage and the visibly deflecting model both inflate the measured force. So the experiment validates the trend; the magnitude gap is a property of the experiment, not a CFD error.</p>
+    </div>
+
+    <div class="scroll-x">
+    <table class="dt">
+      <caption>Matched-configuration comparison at flat (0°) pitch</caption>
+      <thead><tr><th>Quantity</th><th>CFD (matched)</th><th>Wind tunnel</th><th>Difference</th></tr></thead>
+      <tbody>
+        <tr><td>C<sub>N</sub> (normal)</td><td>0.857</td><td>1.479</td><td>42%</td></tr>
+        <tr><td>C<sub>A</sub> (axial)</td><td>1.060</td><td>1.900</td><td>44%</td></tr>
+        <tr class="hl"><td>Normal / axial ratio</td><td>0.808</td><td>0.778</td><td>3.8%</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- STRUCTURES -->
+<section class="blk" id="structures">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">05 / STRUCTURES &amp; FEA</div>
+    <h2 class="sec-h display">Making the load path real.</h2>
+    <p class="sec-sub">Downforce only helps if the wings survive it and stay rigid. The composite spars and aluminum mounts were sized in FEA against conservative load cases, then checked on physical test rigs.</p>
+    <div class="prose">
+      <p>The rear-wing spar is a closed-section carbon box beam (Hexcel AS4 2×2 twill, US Composites 635 epoxy) carrying the ~400 N distributed download on six supports, designed to the Puck composite-failure criterion with a deflection limit of 10 mm. The mounts were topology-optimized in 6061-T6 aluminum against a conservative 1,500 N case, iterated alongside the evolving wing geometry, with every bolt checked for net-section and shear-out failure. I also built static-deflection rigs to validate the FEA against measured data and, just as usefully, to learn where the idealized fixed-support models were too stiff.</p>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/spar-fea.png" alt="Spar FEA deflection result" onerror="imgFail(this)"><figcaption><b>Spar FEA.</b> Carbon box-beam under the worst-case download, sized to the Puck criterion with wide margin (min FOS 33.6 against a 1.5 target).</figcaption></figure>
+      <figure><img src="assets/fsae/rw-mount.jpg" alt="Rear wing mount CAD" onerror="imgFail(this)"><figcaption><b>Topology-optimized mount.</b> Mounts to the roll hoop from above for cleaner flow to the lower element; ~70% lighter than the initial solid, FOS 2.7 at the worst one-sided load.</figcaption></figure>
+    </div>
+    <div class="spec">
+      <span>Puck failure criterion</span><span>min FOS 1.5 target</span><span>6061-T6 topology optimization</span><span>bolt net-section &amp; shear-out checks</span><span>static deflection rigs</span>
+    </div>
+  </div>
+</section>
+
+<!-- MANUFACTURING -->
+<section class="blk" id="manufacturing">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">06 / MANUFACTURING</div>
+    <h2 class="sec-h display">Building it in-house.</h2>
+    <p class="sec-sub">The package was designed to be manufacturable on the team's timeline and budget, and then actually built, from foam cores and molds to a quantified vacuum-bagging process.</p>
+    <div class="prose">
+      <p>I chose vacuum wet lay-up over prepreg for the whole 2026 package: prepreg's strength-to-weight edge is unnecessary for FSAE aero loads, and its long, mold-and-autoclave-intensive cure cycle is incompatible with the build timeline. Wing elements were built over hot-wire-cut foam cores (airfoil profiles exported from SolidWorks as DXF, offset inward by the skin thickness) sandwiched in wet carbon, and the front-wing skins were laid in CNC-milled molds.</p>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/layup.jpg" alt="Carbon fiber wet layup" onerror="imgFail(this)"><figcaption><b>Wet lay-up.</b> Hand-spread epoxy on carbon over a hot-wire foam core before vacuum bagging.</figcaption></figure>
+      <figure><img src="assets/fsae/molds.jpg" alt="CNC molds and finished element" onerror="imgFail(this)"><figcaption><b>Tooling.</b> CNC-milled male/female molds and a finished hot-wire-cored element checked against the CAD profile.</figcaption></figure>
+    </div>
+    <div class="prose">
+      <p>To make the process decision quantitative rather than anecdotal, I ran a controlled experiment: <b>20 coupons, 10 vacuum-bagged against 10 cured at atmospheric pressure</b>, measuring resin uptake, final weight, bond-line thickness, and fiber volume fraction. Vacuum bagging raised the fiber volume fraction from 0.47 to 0.55, cut added resin by 58%, and produced lower-variance (more repeatable) parts.</p>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/vacuum-specimens.jpg" alt="Vacuum bagging experiment specimens" onerror="imgFail(this)"><figcaption><b>Vacuum experiment.</b> Ten specimens under vacuum vs. ten control specimens at atmospheric pressure.</figcaption></figure>
+      <figure><img src="assets/fsae/vacuum-stats.jpg" alt="Statistical results of vacuum experiment" onerror="imgFail(this)"><figcaption><b>Quantified benefit.</b> Gaussian fits show the vacuum set has lower mean and variance in added resin and final weight, and a higher fiber volume fraction.</figcaption></figure>
+    </div>
+    <div class="mcards">
+      <div class="mcard"><div class="v">0.55</div><div class="l">Fiber volume fraction (vs 0.47)</div></div>
+      <div class="mcard"><div class="v">−58<small>%</small></div><div class="l">Added resin weight</div></div>
+      <div class="mcard"><div class="v">0.18<small>mm</small></div><div class="l">Mean bond-line thickness</div></div>
+      <div class="mcard"><div class="v">&lt; $2k</div><div class="l">Full package budget</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATION + RESULT -->
+<section class="blk" id="result">
+  <div class="wrap reveal">
+    <div class="sec-no grad-text">07 / INTEGRATION &amp; OUTCOME</div>
+    <h2 class="sec-h display">A package that earns its weight.</h2>
+    <div class="prose">
+      <p>The aero work was closed back into the vehicle as a system. A mass and moment-of-inertia study (weighing each component and updating the CAD) quantified the rotational-inertia penalty against the grip gain: the package raises the lateral force available per tire by <b>~13% at the front and ~9% at the rear</b>. A ground-clearance study cross-referenced the wing's lowest point against the full vehicle-dynamics motion envelope, pitch, roll, and heave, down to the 2.0 g braking case, and confirmed no floor strike anywhere in the envelope.</p>
+      <p>Across the whole program, the through-line is that every claim is defended: grid independence and GCI on the CFD, force-monitor convergence rather than residuals alone, an independent wind-tunnel trend check, conservative FEA with rig validation, and a manufacturing process backed by a designed experiment. The honest limitations, RAM-capped mesh refinement, uncorrected tunnel blockage, idealized FEA supports, are documented alongside the results, with a clear path to closing each one.</p>
+    </div>
+    <div class="fig-grid">
+      <figure><img src="assets/fsae/wings-assembly.jpg" alt="Front wing assembly CAD" onerror="imgFail(this)"><figcaption><b>Front wing assembly.</b> The assembled front wing structure and elements.</figcaption></figure>
+      <figure><img src="assets/fsae/rear-wing.jpg" alt="Rear wing render" onerror="imgFail(this)"><figcaption><b>Triple-element rear wing.</b> Eppler 423 main and flap with a Selig S1223 upper element.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="documents">
+  <div class="wrap reveal" style="text-align:center">
+    <div class="sec-no grad-text">DOCUMENTS</div>
+    <h2 class="sec-h display" style="max-width:none;margin:10px 0 22px">Read the full work.</h2>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn" href="assets/docs/tr26-cfd-report.pdf" target="_blank" rel="noreferrer">CFD &amp; Wind-Tunnel Report (PDF) &#8599;</a>
+      <a class="btn" href="assets/docs/tr26-design-review.pdf" target="_blank" rel="noreferrer">Design Review Slides (PDF) &#8599;</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div style="color:var(--txt);font-weight:600;margin-bottom:6px">Triton Racing · TR26 Aerodynamics</div>
+      <div style="font-size:13px">CFD &amp; wind tunnel by Jared Admiraal. Tunnel access: Greg Hainline · Setup/review: Alexander Hunter · CFD mentorship: Jue Wang.</div>
+    </div>
+    <a class="btn" href="index.html">&larr; Back to portfolio</a>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><img id="lbimg" src="" alt=""></div>
+
+<script>
+  function imgFail(el){ const fb=document.createElement("div"); fb.className="imgfallback"; fb.textContent="Figure"; el.replaceWith(fb); }
+  const lb=document.getElementById("lb"), lbimg=document.getElementById("lbimg");
+  document.addEventListener("click",(e)=>{
+    const img=e.target.closest("figure img");
+    if(img){ lbimg.src=img.src; lb.classList.add("open"); document.body.style.overflow="hidden"; return; }
+    if(e.target.closest("#lb")){ lb.classList.remove("open"); lbimg.src=""; document.body.style.overflow=""; }
+  });
+  document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&lb.classList.contains("open")){ lb.classList.remove("open"); document.body.style.overflow=""; }});
+  const nav=document.getElementById("nav"), bar=document.getElementById("progress");
+  function onScroll(){ nav.classList.toggle("scrolled",scrollY>30); const h=document.documentElement.scrollHeight-innerHeight; bar.style.width=(h>0?(scrollY/h*100):0)+"%"; }
+  onScroll(); addEventListener("scroll",onScroll,{passive:true});
+  const io=new IntersectionObserver((es)=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}}),{threshold:0.1});
+  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
