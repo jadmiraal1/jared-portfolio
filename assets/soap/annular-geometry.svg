@@ -1,0 +1,91 @@
+<svg viewBox="0 0 880 560" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9fd6ff"/>
+      <stop offset="0.5" stop-color="#c9b8ff"/>
+      <stop offset="1" stop-color="#ffc1e3"/>
+    </linearGradient>
+    <radialGradient id="ring" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.62" stop-color="#c9b8ff" stop-opacity="0"/>
+      <stop offset="0.82" stop-color="#9fd6ff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#ffc1e3" stop-opacity="0.05"/>
+    </radialGradient>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#e6e8ec"/>
+    </marker>
+    <marker id="arrc" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#9fd6ff"/>
+    </marker>
+  </defs>
+
+  <!-- ===== annular film (left) ===== -->
+  <g transform="translate(300,285)">
+    <!-- ring body via even-odd annulus -->
+    <path d="M0,-182 A182,182 0 1,0 0,182 A182,182 0 1,0 0,-182 Z
+             M0,-138 A138,138 0 1,1 0,138 A138,138 0 1,1 0,-138 Z"
+          fill="url(#ring)" fill-rule="evenodd"/>
+    <!-- outer (top) surface -->
+    <circle r="182" fill="none" stroke="#9fd6ff" stroke-width="2"/>
+    <!-- inner (bottom) surface -->
+    <circle r="138" fill="none" stroke="#ffc1e3" stroke-width="2"/>
+    <!-- centreline a(theta,t) -->
+    <circle r="160" fill="none" stroke="#9aa0a8" stroke-width="1.3" stroke-dasharray="5 5"/>
+
+    <!-- radius marker + theta -->
+    <line x1="0" y1="0" x2="131" y2="-92" stroke="#6c727b" stroke-width="1.2"/>
+    <line x1="0" y1="0" x2="190" y2="0" stroke="#6c727b" stroke-width="1.2" stroke-dasharray="3 4"/>
+    <path d="M70,0 A70,70 0 0,0 49.8,-49.2" fill="none" stroke="#9fd6ff" stroke-width="1.4"/>
+    <text x="86" y="-20" fill="#9fd6ff" font-size="17" font-style="italic">θ</text>
+    <text x="58" y="-58" fill="#9aa0a8" font-size="14" font-style="italic">a(θ, t)</text>
+
+    <!-- azimuthal velocity u_theta (along ring) -->
+    <path d="M-150,-92 A176,176 0 0,1 -92,-150" fill="none" stroke="#9fd6ff" stroke-width="2" marker-end="url(#arrc)"/>
+    <text x="-178" y="-128" fill="#9fd6ff" font-size="15" font-style="italic">u</text>
+    <text x="-166" y="-122" fill="#9fd6ff" font-size="11" font-style="italic">θ</text>
+
+    <!-- radial velocity u_r (across) -->
+    <line x1="-113" y1="113" x2="-150" y2="150" stroke="#e6e8ec" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="-150" y="170" fill="#e6e8ec" font-size="15" font-style="italic">u</text>
+    <text x="-138" y="176" fill="#e6e8ec" font-size="11" font-style="italic">r</text>
+
+    <!-- bulk label -->
+    <text x="0" y="6" fill="#cfd3d8" font-size="13" text-anchor="middle">bulk: u, p, c</text>
+  </g>
+
+  <!-- surface labels -->
+  <text x="300" y="78" fill="#9fd6ff" font-size="13" text-anchor="middle">outer surface · Γₜ</text>
+  <text x="300" y="468" fill="#ffc1e3" font-size="13" text-anchor="middle">inner surface · Γₛ</text>
+
+  <!-- ===== cross-section zoom (right) ===== -->
+  <g transform="translate(620,150)">
+    <line x1="-118" y1="135" x2="0" y2="40" stroke="#3a3f48" stroke-width="1" stroke-dasharray="3 4"/>
+    <line x1="-118" y1="150" x2="0" y2="210" stroke="#3a3f48" stroke-width="1" stroke-dasharray="3 4"/>
+    <text x="120" y="-26" fill="#9aa0a8" font-size="12" text-anchor="middle" letter-spacing="2">CROSS-SECTION</text>
+
+    <!-- slab -->
+    <rect x="0" y="40" width="230" height="170" rx="6" fill="url(#ring)" stroke="rgba(255,255,255,0.14)"/>
+    <!-- top surface -->
+    <line x1="0" y1="40" x2="230" y2="40" stroke="#9fd6ff" stroke-width="2.5"/>
+    <!-- bottom surface -->
+    <line x1="0" y1="210" x2="230" y2="210" stroke="#ffc1e3" stroke-width="2.5"/>
+    <!-- centreline -->
+    <line x1="0" y1="125" x2="230" y2="125" stroke="#9aa0a8" stroke-width="1.2" stroke-dasharray="5 5"/>
+
+    <!-- surfactant beads -->
+    <g fill="#9fd6ff"><circle cx="30" cy="40" r="3.4"/><circle cx="80" cy="40" r="3.4"/><circle cx="130" cy="40" r="3.4"/><circle cx="180" cy="40" r="3.4"/></g>
+    <g fill="#ffc1e3"><circle cx="55" cy="210" r="3.4"/><circle cx="105" cy="210" r="3.4"/><circle cx="155" cy="210" r="3.4"/><circle cx="205" cy="210" r="3.4"/></g>
+
+    <!-- thickness 2 eps b -->
+    <line x1="248" y1="40" x2="248" y2="210" stroke="#6c727b" stroke-width="1" marker-start="url(#arr)" marker-end="url(#arr)"/>
+    <text x="258" y="130" fill="#9aa0a8" font-size="13" font-style="italic">2εb(θ, t)</text>
+    <text x="115" y="34" fill="#9fd6ff" font-size="12" text-anchor="middle">Γₜ</text>
+    <text x="115" y="232" fill="#ffc1e3" font-size="12" text-anchor="middle">Γₛ</text>
+    <text x="115" y="130" fill="#cfd3d8" font-size="12" text-anchor="middle" font-style="italic">u, p, c</text>
+  </g>
+
+  <!-- direction legend -->
+  <g transform="translate(70,470)">
+    <text x="0" y="0" fill="#9aa0a8" font-size="12.5">slow direction: <tspan fill="#9fd6ff" font-style="italic">θ</tspan> (around the ring)</text>
+    <text x="0" y="22" fill="#9aa0a8" font-size="12.5">thin direction: <tspan fill="#e6e8ec" font-style="italic">r</tspan> (across the film)</text>
+  </g>
+</svg>
